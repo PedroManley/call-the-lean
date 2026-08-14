@@ -106,7 +106,10 @@
   .raters b { color: var(--ink); font-weight: 600; }
   .caveat { background: #f4f1e9; border-radius: 8px; padding: 8px 12px; margin-bottom: 9px;
     font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
-  .readorig { display: inline-block; margin-top: 10px; font-size: 12.5px; color: var(--ink-soft); }
+  .readorig { display: inline-block; margin-top: 12px; background: var(--ink); color: var(--paper);
+    padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; text-decoration: none; }
+  .readorig:hover { background: #000; }
+  .readnote { display: block; margin-top: 7px; font-size: 11.5px; color: var(--ink-soft); }
 
   .ghostbar { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
   .gchip { display: flex; align-items: center; gap: 7px; background: var(--card); border: 1px solid var(--rule);
@@ -247,6 +250,7 @@
   <div class="podium" id="done-podium"></div>
   <div class="coach" id="done-coach"></div>
   <div class="missed" id="done-missed"></div>
+  <div class="missed" id="done-readlist"></div>
 </div></section>
 
 <div id="countdown"><div id="cd-num">3</div><div id="cd-sub"></div></div>
@@ -288,6 +292,14 @@ function mulberry32(a) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+/* Outbound link to the publisher's original article. rel="noopener" only — no
+   noreferrer — plus UTM tags, so the visit is credited to the game in the
+   outlet's analytics instead of appearing as anonymous direct traffic. */
+function outUrl(url) {
+  if (!url) return null;
+  return url + (url.includes("?") ? "&" : "?") + "utm_source=call-the-lean&utm_medium=referral&utm_campaign=daily";
+}
+
 /* Accepted answers for an item: its outlet rating, plus a second one where the
    two raters disagree. Distance is measured to whichever is closer. */
 function acceptedFor(item) {
@@ -495,7 +507,7 @@ function reveal(playerGuess) {
   const nearest = playerGuess === null ? item.lean
     : acceptedFor(item).reduce((a, b) => Math.abs(playerGuess - b) < Math.abs(playerGuess - a) ? b : a);
   G.results.push({
-    id: item.id, outlet: item.outlet, headline: item.headline,
+    id: item.id, outlet: item.outlet, headline: item.headline, url: item.url,
     truth: item.lean, accepted: acceptedFor(item), nearest,
     guess: playerGuess, dist, pts, t: Math.min(ITEM_SECONDS, R.elapsed),
   });
@@ -546,7 +558,8 @@ function reveal(playerGuess) {
     ${item.tell
       ? `<div class="tell"><b>The tell:</b> ${item.tell}</div>`
       : (outletMeta.note ? `<div class="tell"><b>House style:</b> ${outletMeta.note}</div>` : "")}
-    ${item.url ? `<a class="readorig" href="${item.url}" target="_blank" rel="noopener noreferrer">read the original at ${item.outlet} ↗</a>` : ""}`;
+    ${item.url ? `<a class="readorig" href="${outUrl(item.url)}" target="_blank" rel="noopener">Read the full article at ${item.outlet} ↗</a>
+    <span class="readnote">You've only seen the excerpt — the full story is where the framing really shows. Opens on ${item.outlet}'s own site.</span>` : ""}`;
   $("#reveal").classList.add("on");
 
   const nb = $("#btn-next");
@@ -650,6 +663,13 @@ function showDone(run, replay) {
     <div class="missrow">
       <div class="mh">${r.headline}</div>
       <div class="mm">${r.outlet} is rated <b>${(r.accepted || [r.truth]).map((a) => LEANS[a]).join(" or ")}</b>${r.guess === null ? " — you ran out of time." : ` — you called it ${LEANS[r.guess]}.`}</div>
+    </div>`).join("") : "";
+
+  const readable = (run.results || []).filter((r) => r.url);
+  $("#done-readlist").innerHTML = readable.length ? `<h3>Today's reading list — the full stories</h3>` + readable.map((r) => `
+    <div class="missrow">
+      <div class="mh">${r.headline}</div>
+      <div class="mm"><a href="${outUrl(r.url)}" target="_blank" rel="noopener">Read at ${r.outlet} ↗</a> &middot; rated ${(r.accepted || [r.truth]).map((a) => LEANS[a]).join(" / ")}</div>
     </div>`).join("") : "";
 
   $("#btn-share").onclick = () => shareRun(run);
