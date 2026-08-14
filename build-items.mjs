@@ -95,7 +95,10 @@ const OUTLETS = {
 
 const PER_OUTLET_CAP = 6;
 const LEDE_MIN = 40;
-const LEDE_MAX = 320;
+// Use as much of the publisher's own syndicated excerpt as they provide, up to a cap.
+// Full article text is deliberately NOT fetched or republished — headlines + feed
+// excerpts with attribution and a link back is the line aggregators stay behind.
+const LEDE_MAX = 600;
 // Mechanical junk filter: promos, betting, shopping, entertainment listicles.
 const JUNK = /promo code|sportsbook|betting|coupon|% off|best deals|deal of|sale\b|\$\d+\/month|giveaway|horoscope|crossword|wordle|recipes?\b|streaming (this|now)|new movies|what to watch|box office|red carpet/i;
 
