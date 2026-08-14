@@ -1,0 +1,731 @@
+{
+  "schema": 1,
+  "generated": "2026-08-14",
+  "note": "Headlines and ledes are quoted from publishers' public RSS feeds with attribution and a link back to the original. `lean` is an OUTLET-level rating (0=Left .. 4=Right), not a judgment of the individual article.",
+  "ratingSources": {
+    "method": "Outlet-level ratings from two independent published raters, mapped onto one 5-point scale. Where they disagree, both answers are accepted.",
+    "raters": [
+      "Media Bias/Fact Check (mediabiasfactcheck.com)",
+      "AllSides (allsides.com)"
+    ],
+    "licensing": "MBFC publishes a licensed Data API whose terms name news apps as an intended use. AllSides ratings are CC BY-NC 4.0 — attribution required, commercial use needs a license. Ad Fontes Media requires a license for any reuse and its scores are paywalled, so it is not used here. Ground News publishes no ratings of its own; it averages these same third parties.",
+    "checked": "2026-08-14"
+  },
+  "leanScale": [
+    "Left",
+    "Lean Left",
+    "Center",
+    "Lean Right",
+    "Right"
+  ],
+  "outlets": {
+    "Mother Jones": {
+      "lean": 0,
+      "alt": 1,
+      "mbfc": "Left-Center",
+      "allsides": "Left",
+      "contested": "AllSides rates Mother Jones Left; MBFC rates it Left-Center. Both answers score full credit.",
+      "note": "Progressive investigative magazine — contested policy fights get stated-as-fact framing, and stories tend to have named villains.",
+      "items": 6
+    },
+    "The Intercept": {
+      "lean": 0,
+      "mbfc": "Left",
+      "allsides": "Left",
+      "note": "Adversarial left outlet — official claims arrive in scare quotes, and enforcement agencies are usually the antagonists.",
+      "items": 6
+    },
+    "The New York Times": {
+      "lean": 1,
+      "mbfc": "Left-Center",
+      "allsides": "Lean Left",
+      "note": "Institutional voice with measured verbs — the lean shows in story selection and quiet juxtaposition, rarely in vocabulary.",
+      "items": 6
+    },
+    "NPR": {
+      "lean": 1,
+      "mbfc": "Left-Center",
+      "allsides": "Lean Left",
+      "note": "Explainer tone and empathy-first sourcing — watch soft labels like “controversial” and who gets quoted.",
+      "items": 6
+    },
+    "BBC News": {
+      "lean": 2,
+      "mbfc": "Least Biased",
+      "allsides": "Center",
+      "note": "Wire-style who-what-when — adjectives are rationed on both sides, and “reportedly” hedges the claims.",
+      "items": 6
+    },
+    "The Hill": {
+      "lean": 2,
+      "alt": 1,
+      "mbfc": "Least Biased",
+      "allsides": "Center",
+      "contested": "MBFC and AllSides both place The Hill at center, but a 2026 AllSides editorial review scored it Lean Left. Either answer scores full credit.",
+      "note": "Beltway box scores — wins and losses reported like sports, framed the way officials framed them.",
+      "items": 6
+    },
+    "The Christian Science Monitor": {
+      "lean": 2,
+      "mbfc": "Least Biased",
+      "allsides": "Center",
+      "note": "Measured and hedged, no villains — hot topics covered without culture-war vocabulary.",
+      "items": 6
+    },
+    "New York Post": {
+      "lean": 3,
+      "mbfc": "Right-Center",
+      "allsides": "Lean Right",
+      "note": "Tabloid verbs and mockery with targets usually on the left — but it also runs straight wire copy, which is the hard mode.",
+      "items": 6
+    },
+    "Washington Examiner": {
+      "lean": 3,
+      "mbfc": "Right-Center",
+      "allsides": "Lean Right",
+      "note": "Conservative accountability angles and opinion-forward headlines aimed at Democrats and Beltway insiders.",
+      "items": 6
+    },
+    "Fox News": {
+      "lean": 4,
+      "mbfc": "Right",
+      "allsides": "Right",
+      "note": "Charged labels — “rhetoric,” scare quotes — and story selection that keeps progressive figures in the frame.",
+      "items": 6
+    },
+    "The Daily Wire": {
+      "lean": 4,
+      "mbfc": "Right",
+      "allsides": null,
+      "singleSource": "Rated Right by MBFC; no AllSides rating was retrievable, so this one rests on a single source.",
+      "note": "Speaks directly to a conservative reader — “far-left” labels, prosecuting verbs, first-name mockery.",
+      "items": 6
+    }
+  },
+  "items": [
+    {
+      "id": "i1xp8zii",
+      "outlet": "Mother Jones",
+      "lean": 0,
+      "headline": "A Young Immigrant’s Deportation Nightmare",
+      "lede": "The plane was stuck on the tarmac of a Louisiana airport, but Yurin Quiroa Ralda, 21, was not particularly eager to take off. He was being deported, based in part on misinterpreted records. And not to his birthplace, Guatemala, but to Ecuador, where he’d never even been.",
+      "url": "https://www.motherjones.com/politics/2026/08/trump-deferred-action-special-immigrant-juvenile-status-deportations-ice-detention/",
+      "tell": null,
+      "alt": 1,
+      "contested": "AllSides rates Mother Jones Left; MBFC rates it Left-Center. Both answers score full credit."
+    },
+    {
+      "id": "i3mnlb0",
+      "outlet": "Mother Jones",
+      "lean": 0,
+      "headline": "The Tate Brothers’ Lawyer Is on an Aggressive, AI-Riddled Quest to Win Their Release",
+      "lede": "It seems extremely unlikely that accused rapists and sex traffickers Andrew and Tristan Tate will be released from Miami’s federal detention center, where they’re being held.",
+      "url": "https://www.motherjones.com/politics/2026/08/tate-brothers-ai-jail-lawyer-joseph-mcbride/",
+      "tell": null,
+      "alt": 1,
+      "contested": "AllSides rates Mother Jones Left; MBFC rates it Left-Center. Both answers score full credit."
+    },
+    {
+      "id": "i13x9i6t",
+      "outlet": "Mother Jones",
+      "lean": 0,
+      "headline": "A Trump Judge Called Mail-In Ballots a Threat to Democracy",
+      "lede": "On Wednesday, the conservative Fifth Circuit Court of Appeals overturned a ruling blocking key measures of Texas’ sweeping voter suppression law, SB 1. A lower court previously ruled that the law, which effectively made it harder for people to vote with assistance, violated disability civil rights laws.",
+      "url": "https://www.motherjones.com/politics/2026/08/a-trump-judge-called-mail-in-ballots-a-threat-to-democracy/",
+      "tell": "“A Trump Judge” as the actor, and “voter suppression law” stated as fact rather than attributed — the framing takes a side before the story starts.",
+      "alt": 1,
+      "contested": "AllSides rates Mother Jones Left; MBFC rates it Left-Center. Both answers score full credit."
+    },
+    {
+      "id": "i1ghc5xv",
+      "outlet": "Mother Jones",
+      "lean": 0,
+      "headline": "Legal Filings Allege Rep. Max Miller Made “False Statements” to an Ohio Court",
+      "lede": "On February 27, Rep. Max Miller (R-Ohio) stood before the Cuyahoga County Court to request an emergency civil protection order (CPO) requiring that his ex-wife Emily Moreno stay away from him. Miller’s rationale, he said, was that Moreno was harassing him with serious accusations that were untrue.",
+      "url": "https://www.motherjones.com/politics/2026/08/legal-filings-allege-rep-max-miller-gave-false-statements-to-ohio-court-emily-moreno/",
+      "tell": null,
+      "alt": 1,
+      "contested": "AllSides rates Mother Jones Left; MBFC rates it Left-Center. Both answers score full credit."
+    },
+    {
+      "id": "iwsmqdc",
+      "outlet": "Mother Jones",
+      "lean": 0,
+      "headline": "Flock’s Answer to Its Surveillance Scandals: Trust Us",
+      "lede": "On Thursday, the surveillance technology company Flock announced that it will limit access to its network of over 120,000 automatic license plate readers following disturbing reports dating back to at least 2021 of police officers abusing the technology for criminal activities like stalking.",
+      "url": "https://www.motherjones.com/politics/2026/08/flocks-answer-to-its-surveillance-scandals-trust-us/",
+      "tell": null,
+      "alt": 1,
+      "contested": "AllSides rates Mother Jones Left; MBFC rates it Left-Center. Both answers score full credit."
+    },
+    {
+      "id": "i1brx4t4",
+      "outlet": "Mother Jones",
+      "lean": 0,
+      "headline": "Senators Sound Alarm on Voter Intimidation in Nursing Homes",
+      "lede": "The Centers for Medicare and Medicaid Services, under Trump appointee Mehmet Oz, changed their guidance on voting in nursing homes last month. Now, a group of senators is saying that these changes are designed to disenfranchise America’s two million nursing home residents.",
+      "url": "https://www.motherjones.com/politics/2026/08/senators-sound-alarm-on-voter-intimidation-in-nursing-homes/",
+      "tell": "“Designed to disenfranchise” passes along a motive as the story's frame; “Trump appointee” ties the policy to the administration in one move.",
+      "alt": 1,
+      "contested": "AllSides rates Mother Jones Left; MBFC rates it Left-Center. Both answers score full credit."
+    },
+    {
+      "id": "iewxrz1",
+      "outlet": "The Intercept",
+      "lean": 0,
+      "headline": "Has the Left Really Met Its Limit?",
+      "lede": "David Sirota on Francesca Hong’s defeat, what it means for the insurgent left, and how the American presidency has consolidated king-like power.",
+      "url": "https://theintercept.com/2026/08/14/david-sirota-democratic-establishment/",
+      "tell": null
+    },
+    {
+      "id": "ilr2kkn",
+      "outlet": "The Intercept",
+      "lean": 0,
+      "headline": "Cornell to Pro-Palestine Students Targeted by ICE: Come Back to the U.S. or Lose Funding",
+      "lede": "Momodou Taal and Amandla Thomas-Johnson were finishing their graduate degrees abroad because of targeting by the Trump administration. Cornell is ordering them back to campus.",
+      "url": "https://theintercept.com/2026/08/14/cornell-pro-palestine-student-targeting-ice/",
+      "tell": null
+    },
+    {
+      "id": "i18pms9u",
+      "outlet": "The Intercept",
+      "lean": 0,
+      "headline": "Israel Justified Its Wars by Calling Enemies “Crazy.” Now, the Warning Signs All Apply to Israel.",
+      "lede": "Benjamin Netanyahu shocked the world with violence in Gaza — then took an unhinged Israel to the mainstream.",
+      "url": "https://theintercept.com/2026/08/13/israel-palestine-benjamin-netanyahu-likud-crazy/",
+      "tell": null
+    },
+    {
+      "id": "i143oqap",
+      "outlet": "The Intercept",
+      "lean": 0,
+      "headline": "Tennessee Plans Another Execution Despite Its Brutal Recent Mistakes",
+      "lede": "Despite a record of botched executions, three states including Tennessee plan to kill by lethal injection on Thursday.",
+      "url": "https://theintercept.com/2026/08/12/tennessee-oklahoma-alabama-executions-anthony-darrell-hines-carlos-cuesta-rodriguez-jeremy-williams/",
+      "tell": null
+    },
+    {
+      "id": "i8ms5s2",
+      "outlet": "The Intercept",
+      "lean": 0,
+      "headline": "Francesca Hong’s Loss in Wisconsin is a Win for AI Data Centers — for Now",
+      "lede": "Though the democratic socialist was defeated, the fight against the data centers she opposed isn’t going anywhere.",
+      "url": "https://theintercept.com/2026/08/12/francesca-hong-wisconsin-governor-data-centers/",
+      "tell": null
+    },
+    {
+      "id": "i122wbfd",
+      "outlet": "The Intercept",
+      "lean": 0,
+      "headline": "No, AOC: “Woke” Wasn’t “Crazy” the Way You Say It Was",
+      "lede": "Protesting George Floyd’s murder wasn’t the “crazy” part. Centrist Dems selling out was.",
+      "url": "https://theintercept.com/2026/08/11/alexandria-ocasio-cortex-woke-one-crazy/",
+      "tell": null
+    },
+    {
+      "id": "i1odzpda",
+      "outlet": "The New York Times",
+      "lean": 1,
+      "headline": "Mining Claims Staked on Land Cut From Bears Ears and Grand Staircase Monuments",
+      "lede": "Prospectors are eyeing mineral deposits within the former boundaries of the Bears Ears and Grand Staircase-Escalante National Monuments in Utah.",
+      "url": "https://www.nytimes.com/2026/08/14/climate/mining-trump-utah-monuments.html",
+      "tell": null
+    },
+    {
+      "id": "iyzmm6j",
+      "outlet": "The New York Times",
+      "lean": 1,
+      "headline": "Russell Fry Backs Darline Graham in South Carolina Senate Runoff Amid Trump Pressure",
+      "lede": "The president has been focused on the race since the death of Lindsey Graham in July. Ms. Graham, the late senator’s sister, is competing against Representative Ralph Norman in a runoff on Aug. 25.",
+      "url": "https://www.nytimes.com/2026/08/14/us/politics/russell-fry-darline-graham-south-carolina.html",
+      "tell": null
+    },
+    {
+      "id": "irmtprm",
+      "outlet": "The New York Times",
+      "lean": 1,
+      "headline": "Trump Administration Asks Supreme Court to Greenlight White House Ballroom",
+      "lede": "The planned 90,000-square-foot ballroom is estimated to cost $400 million and is part of the president’s broader effort to remake Washington in his own style.",
+      "url": "https://www.nytimes.com/2026/08/14/us/politics/trump-ballroom-white-house-supreme-court.html",
+      "tell": null
+    },
+    {
+      "id": "i1xgxey9",
+      "outlet": "The New York Times",
+      "lean": 1,
+      "headline": "David Hearn’s Lawyers Ask Court to Bar Future Reflecting Pool Charges",
+      "lede": "Citing comments by President Trump, David Hearn raised the prospect of “prosecutorial harassment.”",
+      "url": "https://www.nytimes.com/2026/08/14/us/hearn-reflecting-pool-prosecutor-harassment.html",
+      "tell": null
+    },
+    {
+      "id": "i12wnpuh",
+      "outlet": "The New York Times",
+      "lean": 1,
+      "headline": "Kevin Rideout, American Missionary Kidnapped in Niger, Is Released",
+      "lede": "Kevin Rideout, a pilot, was abducted from his home in the country’s capital, Niamey, last fall. His mission organization said he was in “good health” after his release.",
+      "url": "https://www.nytimes.com/2026/08/14/world/africa/american-missionary-niger-rideout-released.html",
+      "tell": null
+    },
+    {
+      "id": "i1qc7hxd",
+      "outlet": "The New York Times",
+      "lean": 1,
+      "headline": "Can Polls Measure the True Strength of the Left?",
+      "lede": "Recent polling issues could continue in Democratic primaries in part because progressives are more likely to enjoy taking surveys.",
+      "url": "https://www.nytimes.com/2026/08/14/upshot/polling-errors-michigan-wisconsin.html",
+      "tell": null
+    },
+    {
+      "id": "i6u7ttq",
+      "outlet": "NPR",
+      "lean": 1,
+      "headline": "U.S. missionary who was kidnapped in Niger is released",
+      "lede": "Kevin Rideout \"is in good health in the care of US officials,\" SIM International said in a statement, adding he would soon be reunited with his family.",
+      "url": "https://www.npr.org/2026/08/14/nx-s1-5931225/kidnapped-us-missionary-released",
+      "tell": null
+    },
+    {
+      "id": "i1lmkctb",
+      "outlet": "NPR",
+      "lean": 1,
+      "headline": "New aircraft carrier heads toward Mideast after reports of issues on long-deployed USS Lincoln",
+      "lede": "The Pacific-based aircraft carrier USS George Washington has begun heading toward the Middle East as reports have emerged of mental health and supply issues aboard the long-deployed USS Abraham Lincoln.",
+      "url": "https://www.npr.org/2026/08/14/nx-s1-5931183/new-aircraft-carrier-heads-toward-mideast-after-reports-of-issues-on-long-deployed-uss-lincoln",
+      "tell": null
+    },
+    {
+      "id": "i10o86aw",
+      "outlet": "NPR",
+      "lean": 1,
+      "headline": "Judge drops Nevada case against electors accused of forging certificate in 2020 election",
+      "lede": "The dismissal marks the latest setback in swing states' efforts to prosecute fake electors who tried to keep Trump in the White House after he lost to Joe Biden in 2020.",
+      "url": "https://www.npr.org/2026/08/14/nx-s1-5931179/judge-drops-nevada-case-against-electors-accused-of-forging-certificate-in-2020-election",
+      "tell": null
+    },
+    {
+      "id": "i1gthqa8",
+      "outlet": "NPR",
+      "lean": 1,
+      "headline": "AIPAC didn't always spend on campaigns. Now it faces criticism over money in politics",
+      "lede": "U.S. support for Israel has been a central issue in Democratic primary contests. That's put a spotlight on the pro-Israel lobbying group AIPAC and the strength of its political influence.",
+      "url": "https://www.npr.org/2026/08/13/nx-s1-5923565/aipac-didnt-always-spend-on-campaigns-now-it-faces-criticism-over-money-in-politics",
+      "tell": null
+    },
+    {
+      "id": "i1l0x3va",
+      "outlet": "NPR",
+      "lean": 1,
+      "headline": "Democratic socialism's next test is the Midwest",
+      "lede": "A democratic socialist narrowly lost Wisconsin's Democratic gubernatorial primary. But conversations with swing voters suggest voters may be more open to the \"socialist\" label than expected.",
+      "url": "https://www.npr.org/2026/08/13/nx-s1-5929260/democratic-socialisms-next-test-is-the-midwest",
+      "tell": null
+    },
+    {
+      "id": "itko13v",
+      "outlet": "NPR",
+      "lean": 1,
+      "headline": "Primary voters send mixed signals about what they want from the Democratic Party",
+      "lede": "Primary results this month in Michigan, Minnesota and Wisconsin paint a muddled picture of just how far to the left Democratic voters want their candidates to be come this fall's midterm elections.",
+      "url": "https://www.npr.org/2026/08/13/nx-s1-5929473/primary-voters-send-mixed-signals-about-what-they-want-from-the-democratic-party",
+      "tell": null
+    },
+    {
+      "id": "ik1n3hm",
+      "outlet": "BBC News",
+      "lean": 2,
+      "headline": "Trump asks Supreme Court to allow ballroom work to continue",
+      "lede": "Forcing the US president to go \"hat-in-hand to Congress\" for permission would be \"dangerous\", the administration says.",
+      "url": "https://www.bbc.co.uk/news/articles/c3v0yz2r4wlo?at_medium=RSS&at_campaign=rss",
+      "tell": null
+    },
+    {
+      "id": "ivy851v",
+      "outlet": "BBC News",
+      "lean": 2,
+      "headline": "US missionary released following kidnap in Niger, Christian group says",
+      "lede": "Kevin Rideout, who was kidnapped outside his home in the capital last October, is now with US officials.",
+      "url": "https://www.bbc.co.uk/news/articles/ckg40jvvkp7o?at_medium=RSS&at_campaign=rss",
+      "tell": null
+    },
+    {
+      "id": "i1frew4f",
+      "outlet": "BBC News",
+      "lean": 2,
+      "headline": "Selena Gomez sued for alleged fraud over mental health company",
+      "lede": "Investors say the actor and singer did not take an \"active role\" in the company as promised.",
+      "url": "https://www.bbc.co.uk/news/articles/c8jn2811we4o?at_medium=RSS&at_campaign=rss",
+      "tell": null
+    },
+    {
+      "id": "i4u67oo",
+      "outlet": "BBC News",
+      "lean": 2,
+      "headline": "Kennedy Center board votes to put Trump's name back on building",
+      "lede": "The board on Thursday also voted to proceed with a two-year closure for proposed renovations, which was earlier blocked by a federal judge.",
+      "url": "https://www.bbc.co.uk/news/articles/cn7n5l5xy5ro?at_medium=RSS&at_campaign=rss",
+      "tell": "Straight who-what-when with no adjectives spent on either side — outside-the-fray tone is the center giveaway."
+    },
+    {
+      "id": "i1l80og8",
+      "outlet": "BBC News",
+      "lean": 2,
+      "headline": "Conditions on US aircraft carrier at sea for more than 250 days raise alarms",
+      "lede": "Thousands of sailors on the USS Abraham Lincoln have reportedly faced food shortages and broken plumbing, with some considering jumping overboard.",
+      "url": "https://www.bbc.co.uk/news/articles/cyvl2d5j52lo?at_medium=RSS&at_campaign=rss",
+      "tell": "“Reportedly” hedges every claim and nobody is blamed — an accountability story told without a partisan target."
+    },
+    {
+      "id": "iopdays",
+      "outlet": "BBC News",
+      "lean": 2,
+      "headline": "Who could replace White House Press Secretary Karoline Leavitt?",
+      "lede": "The job requires managing a complex relationship with the media - as well Trump's high expectations.",
+      "url": "https://www.bbc.co.uk/news/articles/c0l5273xjnlo?at_medium=RSS&at_campaign=rss",
+      "tell": null
+    },
+    {
+      "id": "i1xvamm7",
+      "outlet": "The Hill",
+      "lean": 2,
+      "headline": "Mangione pleads guilty to federal charges in UnitedHealthcare CEO shooting",
+      "lede": "Luigi Mangione pleaded guilty on Friday to federal stalking charges stemming from the fatal shooting of UnitedHealthcare CEO Brian Thompson in midtown Manhattan two years ago, a development that comes just weeks before his state trial is slated to begin.",
+      "url": "https://thehill.com/homenews/6029930-luigi-mangione-pleads-guilty-federal-case-brian-thompson/",
+      "tell": null,
+      "alt": 1,
+      "contested": "MBFC and AllSides both place The Hill at center, but a 2026 AllSides editorial review scored it Lean Left. Either answer scores full credit."
+    },
+    {
+      "id": "i1craqap",
+      "outlet": "The Hill",
+      "lean": 2,
+      "headline": "Federal surveillance operation targeted progressive groups, unions in Minnesota, documents show",
+      "lede": "Federal agents secretly monitored progressive groups and protesters during the Trump administration’s immigration crackdown in Minneapolis, according to court documents filed Thursday.",
+      "url": "https://thehill.com/regulation/court-battles/6030064-dhs-secretly-monitored-minneapolis-protesters/",
+      "tell": null,
+      "alt": 1,
+      "contested": "MBFC and AllSides both place The Hill at center, but a 2026 AllSides editorial review scored it Lean Left. Either answer scores full credit."
+    },
+    {
+      "id": "i18d5brd",
+      "outlet": "The Hill",
+      "lean": 2,
+      "headline": "Ocasio-Cortez: ‘Pretty funny’ some people are freaking out about decision to freeze eggs",
+      "lede": "Rep. Alexandria Ocasio-Cortez (D-N.Y.) said Thursday she found it “funny” that some people are criticizing her for publicly sharing her journey to freeze her eggs.",
+      "url": "https://thehill.com/homenews/house/6030003-alexandria-ocasio-cortez-egg-freezing-criticism/",
+      "tell": null,
+      "alt": 1,
+      "contested": "MBFC and AllSides both place The Hill at center, but a 2026 AllSides editorial review scored it Lean Left. Either answer scores full credit."
+    },
+    {
+      "id": "ibr4ke",
+      "outlet": "The Hill",
+      "lean": 2,
+      "headline": "How not to fix the War Powers Resolution",
+      "lede": "Rep. John Larson's bill seeking to amend the War Powers Resolution failed to address the law's core weakness regarding the definition of hostilites and the ability of presidents to circumvent congressional oversight.",
+      "url": "https://thehill.com/opinion/white-house/6029248-larson-bill-war-powers-failed/",
+      "tell": null,
+      "alt": 1,
+      "contested": "MBFC and AllSides both place The Hill at center, but a 2026 AllSides editorial review scored it Lean Left. Either answer scores full credit."
+    },
+    {
+      "id": "i1eeccr",
+      "outlet": "The Hill",
+      "lean": 2,
+      "headline": "Pirro announces charges in WWII vandalism case",
+      "lede": "A suspect has been taken into custody for allegedly vandalizing the World War II Memorial in Washington, D.C., U.S. Attorney Jeanine Pirro announced Friday. Her office filed two felony charges against a woman named Melissa L.",
+      "url": "https://thehill.com/homenews/administration/6029979-woman-charged-wwii-memorial-vandalism/",
+      "tell": null,
+      "alt": 1,
+      "contested": "MBFC and AllSides both place The Hill at center, but a 2026 AllSides editorial review scored it Lean Left. Either answer scores full credit."
+    },
+    {
+      "id": "i1u53zjw",
+      "outlet": "The Hill",
+      "lean": 2,
+      "headline": "How many people actually have cyclosporiasis? Why it’s so hard to track",
+      "lede": "The current outbreak has been attributed to contaminated iceberg lettuce from central Mexico.",
+      "url": "https://thehill.com/policy/healthcare/6028033-why-cyclosporiasis-cases-are-hard-to-track/",
+      "tell": null,
+      "alt": 1,
+      "contested": "MBFC and AllSides both place The Hill at center, but a 2026 AllSides editorial review scored it Lean Left. Either answer scores full credit."
+    },
+    {
+      "id": "i9h41fj",
+      "outlet": "The Christian Science Monitor",
+      "lean": 2,
+      "headline": "Democrats’ socialist surge hits a roadblock in Wisconsin",
+      "lede": "Despite a messy gubernatorial primary in which multiple candidates dropped out, polling front-runner and democratic socialist Francesca Hong was edged out by center-left candidate David Crowley.",
+      "url": "https://www.csmonitor.com/USA/Politics/2026/0812/hong-crowley-wisconsin-governor-primary?icid=rss",
+      "tell": null
+    },
+    {
+      "id": "imdpd32",
+      "outlet": "The Christian Science Monitor",
+      "lean": 2,
+      "headline": "Scrutiny of Rep. Max Miller adds to a trend in Congress",
+      "lede": "Lawmakers or candidates in both parties have faced allegations of sexual misconduct or domestic abuse. Some peers of Ohio’s Max Miller have called for him to resign his House seat.",
+      "url": "https://www.csmonitor.com/USA/Politics/2026/0807/max-miller-republicans-midterm-elections?icid=rss",
+      "tell": null
+    },
+    {
+      "id": "i8wls6r",
+      "outlet": "The Christian Science Monitor",
+      "lean": 2,
+      "headline": "In Utah canyons, a clash over federal lands – and the future of the West",
+      "lede": "The U.S. government is slashing two revered national monuments in Utah. What happens next could determine how vast public lands in the western U.S. are managed – or exploited.",
+      "url": "https://www.csmonitor.com/USA/Politics/2026/0807/utah-bears-ears-public-land-debate?icid=rss",
+      "tell": null
+    },
+    {
+      "id": "i1p0ncat",
+      "outlet": "The Christian Science Monitor",
+      "lean": 2,
+      "headline": "Project 2025: As midterms near, Trump’s window for action might be closing",
+      "lede": "The Trump administration has enacted many of Project 2025’s goals, but many await action ahead of midterms that could alter the balance of power in Washington.",
+      "url": "https://www.csmonitor.com/USA/Politics/2026/0806/project-2025-trump-administration?icid=rss",
+      "tell": null
+    },
+    {
+      "id": "iaf2m6j",
+      "outlet": "The Christian Science Monitor",
+      "lean": 2,
+      "headline": "Why Lindsey Graham’s sister isn’t a lock to hold on to his Senate seat",
+      "lede": "President Donald Trump has endorsed South Carolina Sen. Darline Graham in next Tuesday’s special primary for the late senator’s seat. But she’s up against a crowded field that features more experienced candidates.",
+      "url": "https://www.csmonitor.com/USA/Politics/2026/0806/darline-graham-senate-special-election?icid=rss",
+      "tell": null
+    },
+    {
+      "id": "i12rnthf",
+      "outlet": "The Christian Science Monitor",
+      "lean": 2,
+      "headline": "Progressive Democrats propel El-Sayed to Michigan Senate primary win",
+      "lede": "Abdul El-Sayed edged Rep. Haley Stevens in Michigan’s Democratic primary for a Senate seat.",
+      "url": "https://www.csmonitor.com/USA/Politics/2026/0805/michigan-election-el-sayed-senate?icid=rss",
+      "tell": null
+    },
+    {
+      "id": "i179s2sb",
+      "outlet": "New York Post",
+      "lean": 3,
+      "headline": "Suspect charged with vandalizing DC World War II memorial with bubble soap, red graffiti",
+      "lede": "WASHINGTON — DC US Attorney Jeanine Pirro announced charges Friday against a woman who allegedly vandalized the capital’s World War II Memorial by pouring bubble soap into its fountain.",
+      "url": "https://nypost.com/2026/08/14/us-news/suspect-charged-with-vandalizing-dc-world-war-ii-memorial-with-bubble-soap-red-graffiti/",
+      "tell": null
+    },
+    {
+      "id": "ieyrdba",
+      "outlet": "New York Post",
+      "lean": 3,
+      "headline": "Pro-lifers push investigation into NIH that using aborted baby organs, tissue in research",
+      "lede": "NIH spending on human fetal tissue research has declined from nearly $120 million in fiscal year 2018 to approximately half that amount in fiscal year 2024, according to the agency.",
+      "url": "https://nypost.com/2026/08/14/us-news/pro-lifers-push-investigation-into-nih-using-aborted-baby-organs-and-tissue-in-research/",
+      "tell": null
+    },
+    {
+      "id": "i1xzt0xg",
+      "outlet": "New York Post",
+      "lean": 3,
+      "headline": "Michigan lefty in swing district House race once gushed over Hasan Piker: ‘You’re the man!’",
+      "lede": "Self-described democratic socialist Michigan hopeful William Lawrence once gushed over radical streamer Hasan Piker and sought to get on his stream.",
+      "url": "https://nypost.com/2026/08/14/us-news/michigan-house-hopeful-william-lawrence-once-gushed-over-hasan-piker/",
+      "tell": null
+    },
+    {
+      "id": "i1auk4cq",
+      "outlet": "New York Post",
+      "lean": 3,
+      "headline": "JD Vance warns Republicans not to blame young Americans for the appeal of socialism",
+      "lede": "Vice President JD Vance warns Republicans not to blame young Americans for embracing socialism, saying the GOP must address surging housing prices and economic anxiety.",
+      "url": "https://nypost.com/2026/08/14/us-news/jd-vance-warns-republicans-not-to-blame-young-americans-for-the-appeal-of-socialism/",
+      "tell": null
+    },
+    {
+      "id": "itfvc3g",
+      "outlet": "New York Post",
+      "lean": 3,
+      "headline": "Trump slaps 100% tariff on certain drones over national security concerns",
+      "lede": "The proclamation imposes a 100% ​tariff on drones “of a certain size or with certain capabilities that are particularly sensitive for national security purposes,” according to the White House, including those with a maximum takeoff weight of more than 55 pounds and with thermal imaging capabilities.",
+      "url": "https://nypost.com/2026/08/14/us-news/trump-slaps-100-tariff-on-certain-drones-over-national-security-concerns/",
+      "tell": null
+    },
+    {
+      "id": "i1rggzip",
+      "outlet": "New York Post",
+      "lean": 3,
+      "headline": "Santa Ana mayor’s homelessness crackdown goes viral as Karen Bass called out",
+      "lede": "Santa Ana Mayor Valerie Amezcua is drawing a hard line on homelessness and crime.",
+      "url": "https://nypost.com/2026/08/13/us-news/santa-ana-mayor-calls-out-karen-bass-on-homelessness-and-crime/",
+      "tell": null
+    },
+    {
+      "id": "i14i357f",
+      "outlet": "Washington Examiner",
+      "lean": 3,
+      "headline": "American missionary kidnapped in Niger free after nearly one year",
+      "lede": "A Christian missionary from the U.S. in Niger has been released after being kidnapped in the African country’s capital roughly ten months ago, according to his mission organization. SIM International announced Friday that Kevin Rideout “is in good health in the care of U.S.",
+      "url": "https://www.washingtonexaminer.com/news/crime/4687509/american-missionary-kidnapped-in-niger-free/",
+      "tell": null
+    },
+    {
+      "id": "ii2amw9",
+      "outlet": "Washington Examiner",
+      "lean": 3,
+      "headline": "White House report card: Trump finds his midterm message as crime rates plunge",
+      "lede": "Welcome to Friday’s edition of Washington Secrets. Who says August has to be dull in politics? We bring you our regular look at the White House week, plus more evidence of Abdul el Sayed’s links to the Democratic Socialists of America. This week brought a new Iran strategy, a catering truck ruse, and signs that […]",
+      "url": "https://www.washingtonexaminer.com/news/washington-secrets/4687415/white-house-report-card-trump-midterm-message-crime-rates-plunge/",
+      "tell": null
+    },
+    {
+      "id": "izpoi5b",
+      "outlet": "Washington Examiner",
+      "lean": 3,
+      "headline": "Sherrod Brown leads Jon Husted in Ohio Senate poll as inflation fuels voter concerns",
+      "lede": "Former Democratic Sen. Sherrod Brown is maintaining his lead over incumbent Sen. Jon Husted (R-OH) as cost of living and inflation take center stage for voters in Ohio, according to a new poll. Brown has held onto his 8-point advantage over Husted, with a new Fox News poll finding that 53% of voters prefer the […]",
+      "url": "https://www.washingtonexaminer.com/news/campaigns/congressional/4687496/sherrod-brown-jon-husted-ohio-senate-poll/",
+      "tell": null
+    },
+    {
+      "id": "i1r3bvsy",
+      "outlet": "Washington Examiner",
+      "lean": 3,
+      "headline": "Consumer sentiment falls in August amid uncertainty about Iran war",
+      "lede": "Consumer sentiment dropped more than expected this month, ending two months of improvement. Consumer sentiment fell to 51, down from 55.2 in July, according to a preliminary reading of the University of Michigan Consumer Sentiment Index for August. That’s nearly an 8% decline from the month before.",
+      "url": "https://www.washingtonexaminer.com/policy/finance-and-economy/4687591/consumer-sentiment-falls-august-amid-uncertainty-iran/",
+      "tell": null
+    },
+    {
+      "id": "iwdjx89",
+      "outlet": "Washington Examiner",
+      "lean": 3,
+      "headline": "Luigi Mangione pleads guilty in UnitedHealthcare CEO Brian Thompson murder case",
+      "lede": "Luigi Mangione said Friday he is pleading guilty to both counts of federal stalking charges connected to the 2024 killing of UnitedHealthcare CEO Brian Thompson, a major development that could complicate New York prosecutors’ separate murder case against him.",
+      "url": "https://www.washingtonexaminer.com/news/justice/4687544/luigi-mangione-pleads-guilty-unitedhealthcare-murder/",
+      "tell": null
+    },
+    {
+      "id": "i8p9vrg",
+      "outlet": "Washington Examiner",
+      "lean": 3,
+      "headline": "Young women are moving left. So why are so many powerful women on the Right?",
+      "lede": "There’s a contradiction happening in politics. Young women are moving left in record numbers, while more conservative women are holding positions of power. A poll from Gallup showed 40% of women under the age of 30 identify as liberal, versus 21% who identify as conservative.",
+      "url": "https://www.washingtonexaminer.com/opinion/4687504/liberal-women-conservative-women-in-politics/",
+      "tell": null
+    },
+    {
+      "id": "in6vsed",
+      "outlet": "Fox News",
+      "lean": 4,
+      "headline": "New York City’s lone Republican in Congress accuses Mamdani, Schumer of 'hypocrisy' in voter ID fight",
+      "lede": "Rep. Nicole Malliotakis, R-N.Y. argues Senate Minority Leader Chuck Schumer and Senate Democrats block the SAVE Act while claiming to support voter ID in their districts.",
+      "url": "https://www.foxnews.com/politics/new-york-citys-lone-republican-congress-accuses-mamdani-schumer-hypocrisy-voter-id-fight",
+      "tell": null
+    },
+    {
+      "id": "io43o1b",
+      "outlet": "Fox News",
+      "lean": 4,
+      "headline": "Cuban ties put powerful US union under microscope over alleged communist influence push",
+      "lede": "Senate Committee on Health, Education, Labor and Pensions Chair Bill Cassidy demands answers from IAM over alleged Cuban regime influence scheme.",
+      "url": "https://www.foxnews.com/politics/cuban-ties-put-powerful-us-union-under-microscope-over-alleged-communist-influence-push",
+      "tell": "“Communist influence” in a union story — both the vocabulary and the target (organized labor) point right."
+    },
+    {
+      "id": "i12b7dy7",
+      "outlet": "Fox News",
+      "lean": 4,
+      "headline": "WWII Memorial vandalism suspect now in custody, to be charged with two felonies, Pirro announces",
+      "lede": "Melissa L. Farris is in federal custody and is facing two felony charges for allegedly vandalizing the World War II Memorial in Washington, D.C.",
+      "url": "https://www.foxnews.com/politics/wwii-memorial-vandalism-suspect-now-custody-charged-two-felonies-pirro-announces",
+      "tell": null
+    },
+    {
+      "id": "i1tpw1o5",
+      "outlet": "Fox News",
+      "lean": 4,
+      "headline": "El-Sayed in the hot seat after 'sickening' animal control record goes viral on social media",
+      "lede": "Abdul El-Sayed's Michigan Senate bid faces scrutiny over thousands of euthanized animals at Detroit Animal Control during his tenure as the city's health director.",
+      "url": "https://www.foxnews.com/politics/el-sayed-hot-seat-sickening-animal-control-record-goes-viral-social-media",
+      "tell": "“In the hot seat,” a scare-quoted “sickening,” and “goes viral” — opposition-research framing aimed at a Democratic candidate."
+    },
+    {
+      "id": "i1s5fc0x",
+      "outlet": "Fox News",
+      "lean": 4,
+      "headline": "Mark Lynch endorses Ralph Norman as congressman heads into runoff against Darline Graham",
+      "lede": "Mark Lynch endorsed Rep. Ralph Norman, the candidate running against Sen. Darline Graham in the South Carolina special GOP U.S. Senate primary runoff.",
+      "url": "https://www.foxnews.com/politics/ralph-norman-darline-graham-senate-runoff",
+      "tell": null
+    },
+    {
+      "id": "i11wngzx",
+      "outlet": "Fox News",
+      "lean": 4,
+      "headline": "Newsom-appointed judge who freed migrant before fatal stabbing said justice 'sometimes means a dismissal'",
+      "lede": "Judge Nichelle Holmes once said justice can mean \"dismissal.\" After she released Marcos Iriarte-Valdez, he allegedly killed Todd Stewart, 68.",
+      "url": "https://www.foxnews.com/politics/newsom-appointed-judge-freed-migrant-fatal-stabbing-said-justice-sometimes-means-dismissal",
+      "tell": null
+    },
+    {
+      "id": "i7o20tg",
+      "outlet": "The Daily Wire",
+      "lean": 4,
+      "headline": "Jim DeMint: The Wall Street Journal’s Outbreak Of ‘Vance Derangement’",
+      "lede": "Many conservatives have regarded Kim Strassel of the Wall Street Journal as one of the sharper and more reliable columnists on the right. In recent months, however, she appears to have contracted a sudden and acute case of Vance Derangement – VD, for short.",
+      "url": "https://www.dailywire.com/news/jim-demint-the-wall-street-journals-outbreak-of-vance-derangement",
+      "tell": null,
+      "singleSource": "Rated Right by MBFC; no AllSides rating was retrievable, so this one rests on a single source."
+    },
+    {
+      "id": "i1i5y6g8",
+      "outlet": "The Daily Wire",
+      "lean": 4,
+      "headline": "Trump Admin Steps Into Surrogate’s Fight For Newborn’s Life-Saving Care",
+      "lede": "The Trump administration is stepping into the extraordinary surrogacy fight pitting a surrogate against a baby’s biological parents, warning hospitals that the child, who was born with a heart defect, must receive life-saving care as a tense legal battle unfolds.",
+      "url": "https://www.dailywire.com/news/trump-admin-steps-into-surrogates-fight-for-newborns-life-saving-care",
+      "tell": null,
+      "singleSource": "Rated Right by MBFC; no AllSides rating was retrievable, so this one rests on a single source."
+    },
+    {
+      "id": "i1nhx1ge",
+      "outlet": "The Daily Wire",
+      "lean": 4,
+      "headline": "Kidnapped American Missionary’s Family Gets The News They’ve Waited Nine Months To Hear",
+      "lede": "An American missionary held in captivity in Niger for nine months will soon reunite with his family. Christian missionary pilot Kevin Rideout is free and safe with American officials after his kidnapping last year, his mission organization said Friday.",
+      "url": "https://www.dailywire.com/news/kidnapped-american-missionarys-family-gets-the-news-theyve-waited-nine-months-to-hear",
+      "tell": null,
+      "singleSource": "Rated Right by MBFC; no AllSides rating was retrievable, so this one rests on a single source."
+    },
+    {
+      "id": "i1edx35n",
+      "outlet": "The Daily Wire",
+      "lean": 4,
+      "headline": "Luigi Mangione Lays Out Chilling Step By Step Plot To Kill Brian Thompson",
+      "lede": "In a jaw-dropping courtroom confession, Luigi Mangione pleaded guilty Friday to federal stalking charges carrying a potential life sentence in connection with the killing of UnitedHealthcare CEO Brian Thompson, a move that could have major implications for his upcoming New York murder trial.",
+      "url": "https://www.dailywire.com/news/luigi-mangione-pleads-guilty-in-shocking-twist-ahead-of-murder-trial",
+      "tell": null,
+      "singleSource": "Rated Right by MBFC; no AllSides rating was retrievable, so this one rests on a single source."
+    },
+    {
+      "id": "ih1d04c",
+      "outlet": "The Daily Wire",
+      "lean": 4,
+      "headline": "Surprise! A Key Voting Bloc Is Ditching The GOP For A Far-Left Candidate",
+      "lede": "In the battle for the Michigan U.S. Senate seat, one demographic is sticking out like a sore thumb.",
+      "url": "https://www.dailywire.com/news/surprise-a-key-voting-bloc-is-ditching-the-gop-for-a-far-left-candidate",
+      "tell": "“Surprise!” talks directly to a presumed conservative reader, and “far-left” is the label tell — candidates rarely call themselves that.",
+      "singleSource": "Rated Right by MBFC; no AllSides rating was retrievable, so this one rests on a single source."
+    },
+    {
+      "id": "i1qz26qg",
+      "outlet": "The Daily Wire",
+      "lean": 4,
+      "headline": "WNBA Player Who Leveled Sophie Cunningham Targets Innocent Fan, Plays Victim Again",
+      "lede": "DiJonai Carrington, the WNBA player who clocked Indiana Fever guard Sophie Cunningham last week and then cried about “white privilege,” is playing the victim once again.",
+      "url": "https://www.dailywire.com/news/wnba-player-who-leveled-sophie-cunningham-targets-innocent-fan-plays-victim-again",
+      "tell": null,
+      "singleSource": "Rated Right by MBFC; no AllSides rating was retrievable, so this one rests on a single source."
+    }
+  ]
+}

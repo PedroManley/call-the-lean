@@ -1,0 +1,35 @@
+name: Daily headline refresh
+
+on:
+  schedule:
+    # 10:00 UTC = 6:00 AM ET. GitHub cron can drift by up to ~30 min on busy days.
+    - cron: "0 10 * * *"
+  workflow_dispatch: {}   # manual "run now" button in the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch fresh headlines from outlet RSS feeds
+        run: node build-items.mjs
+
+      - name: Commit the new pool (only if it changed)
+        run: |
+          git config user.name "daily-refresh"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/items.json
+          if git diff --cached --quiet; then
+            echo "No changes — feeds returned the same pool."
+          else
+            git commit -m "Daily headline refresh $(date -u +%F)"
+            git push
+          fi

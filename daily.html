@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call the Lean — Daily</title>
+<style>
+  :root {
+    --paper: #faf7f2; --card: #ffffff; --ink: #1c1a17; --ink-soft: #6b655c;
+    --rule: #e4ded4; --brand: #c8342a; --good: #1a7f4e;
+    --l0: #2451c9; --l1: #7b96e3; --l2: #9b9483; --l3: #dd8b74; --l4: #c0392b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); min-height: 100vh;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .screen { display: none; } .screen.active { display: block; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 34px 22px 70px; }
+
+  .edition { display: flex; align-items: baseline; gap: 12px; border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .edition .kicker { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-soft); }
+  .edition .date { margin-left: auto; font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .logo { font-family: Georgia, serif; font-size: 46px; font-weight: 700; letter-spacing: -1px;
+    border-bottom: 4px solid var(--ink); padding-bottom: 12px; }
+  .logo em { color: var(--brand); font-style: normal; }
+  .tagline { color: var(--ink-soft); font-size: 16.5px; margin: 16px 0 26px; line-height: 1.55; }
+
+  .streakrow { display: flex; gap: 10px; margin-bottom: 26px; flex-wrap: wrap; }
+  .pill { background: var(--card); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 8px 15px; font-size: 13.5px; font-weight: 600; }
+  .pill b { font-family: Georgia, serif; font-size: 15px; }
+  .rules { display: grid; gap: 9px; margin-bottom: 26px; }
+  .rules div { display: flex; gap: 11px; align-items: baseline; font-size: 15px; }
+  .rules b.num { color: var(--brand); font-family: Georgia, serif; font-size: 17px; min-width: 16px; }
+  .spectrum-demo { display: flex; border-radius: 8px; overflow: hidden; margin-bottom: 28px; border: 1px solid var(--rule); }
+  .spectrum-demo div { flex: 1; padding: 9px 4px; text-align: center; color: #fff; font-size: 12.5px; font-weight: 700; }
+  .bigbtn { background: var(--brand); color: #fff; border: none; font-size: 18px; font-weight: 700;
+    padding: 15px 36px; border-radius: 10px; cursor: pointer; font-family: inherit; }
+  .bigbtn:hover { background: #a92a21; }
+  .bigbtn.dark { background: var(--ink); } .bigbtn.dark:hover { background: #000; }
+  .bigbtn:disabled { background: #b7b0a3; cursor: default; }
+  .ghostnote, .srcnote { margin-top: 28px; font-size: 12px; color: var(--ink-soft); line-height: 1.55; }
+  .altlink { margin-left: 16px; font-size: 14px; color: var(--ink-soft); }
+
+  /* round */
+  .topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+  .topbar .roundlab { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); }
+  .topbar .yourscore { margin-left: auto; font-family: Georgia, serif; font-size: 25px; font-weight: 700; }
+  .yourscore.pop { animation: pop .35s; }
+  @keyframes pop { 40% { transform: scale(1.2); } }
+  .clock { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 18px; width: 46px; text-align: right; }
+  .clock.low { color: var(--brand); }
+  .timerbar { height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+  .timerbar .fill { height: 100%; width: 100%; background: var(--ink); }
+  .timerbar .fill.low { background: var(--brand); }
+  .dots { display: flex; gap: 5px; margin-bottom: 18px; }
+  .dots span { flex: 1; height: 5px; border-radius: 3px; background: var(--rule); }
+  .dots span.d0 { background: var(--good); } .dots span.d1 { background: #d9a441; }
+  .dots span.d2 { background: #dd8b74; } .dots span.d3 { background: var(--brand); }
+  .dots span.dx { background: #8a8378; } .dots span.cur { background: var(--ink); }
+
+  .article { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 26px 30px 28px; }
+  .masthead { border-bottom: 3px double var(--ink); padding-bottom: 10px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .outlet-hidden { font-family: Georgia, serif; font-size: 18px; font-weight: 700; letter-spacing: 2px;
+    background: repeating-linear-gradient(45deg, #dcd5c8, #dcd5c8 6px, #cfc7b8 6px, #cfc7b8 12px);
+    color: transparent; border-radius: 4px; padding: 0 8px; user-select: none; }
+  .outlet-revealed { font-family: Georgia, serif; font-size: 19px; font-weight: 700; }
+  .wiretag { font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-soft); }
+  .article h1 { font-family: Georgia, serif; font-size: 25px; line-height: 1.3; margin-bottom: 12px; }
+  .lede { font-family: Georgia, serif; font-size: 16.5px; line-height: 1.65; color: #33302a; }
+
+  .guessbar { margin-top: 22px; }
+  .glabel { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 9px; }
+  .spectrum { display: flex; border-radius: 10px; overflow: hidden; border: 1px solid var(--rule); }
+  .spectrum button { flex: 1; border: none; padding: 15px 4px; color: #fff; font-family: inherit;
+    font-size: 13px; font-weight: 700; cursor: pointer; opacity: .88; transition: all .12s; }
+  .spectrum button:hover:not(:disabled) { opacity: 1; transform: scale(1.04); }
+  .spectrum button:disabled { cursor: default; opacity: .32; }
+  .spectrum button.picked { opacity: 1; outline: 3px solid var(--ink); outline-offset: -3px; }
+  .b0 { background: var(--l0); } .b1 { background: var(--l1); } .b2 { background: var(--l2); }
+  .b3 { background: var(--l3); } .b4 { background: var(--l4); }
+
+  .reveal { margin-top: 20px; border-top: 1.5px dashed var(--rule); padding-top: 16px; display: none; }
+  .reveal.on { display: block; animation: fin .3s; }
+  @keyframes fin { from { opacity: 0; transform: translateY(-4px); } }
+  .rhead { display: flex; align-items: baseline; gap: 11px; flex-wrap: wrap; margin-bottom: 10px; }
+  .rout { font-family: Georgia, serif; font-size: 20px; font-weight: 700; }
+  .ratechip { font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
+    border-radius: 999px; padding: 3px 10px; color: #fff; }
+  .rpts { margin-left: auto; font-family: Georgia, serif; font-size: 21px; font-weight: 800; }
+  .rpts.plus { color: var(--good); } .rpts.zero { color: var(--ink-soft); }
+  .marks { position: relative; height: 62px; margin: 4px 0 10px; }
+  .marks .track { position: absolute; top: 25px; left: 0; right: 0; height: 12px; border-radius: 6px;
+    display: flex; overflow: hidden; border: 1px solid var(--rule); }
+  .marks .track div { flex: 1; opacity: .5; }
+  .marks .track div.truth { opacity: 1; box-shadow: inset 0 0 0 2px var(--ink); }
+  .marks .pin { position: absolute; top: 0; width: 25px; height: 25px; border-radius: 50%;
+    transform: translateX(-50%); color: #fff; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; border: 2px solid var(--paper); }
+  .marks .pin.below { top: auto; bottom: 0; }
+  .tell { border-left: 3px solid var(--brand); background: #fcfaf5; border-radius: 0 8px 8px 0;
+    padding: 9px 13px; font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); }
+  .tell b { color: var(--ink); }
+  .raters { font-size: 12px; color: var(--ink-soft); margin: -4px 0 2px; }
+  .raters b { color: var(--ink); font-weight: 600; }
+  .caveat { background: #f4f1e9; border-radius: 8px; padding: 8px 12px; margin-bottom: 9px;
+    font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
+  .readorig { display: inline-block; margin-top: 10px; font-size: 12.5px; color: var(--ink-soft); }
+
+  .ghostbar { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .gchip { display: flex; align-items: center; gap: 7px; background: var(--card); border: 1px solid var(--rule);
+    border-radius: 999px; padding: 5px 12px 5px 5px; font-size: 12.5px; font-weight: 600; }
+  .gchip .mini { width: 21px; height: 21px; border-radius: 50%; color: #fff; font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; }
+  .gchip.me { border-color: var(--ink); border-width: 1.5px; }
+  .gchip .gs { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+
+  /* results */
+  #screen-done h2 { font-family: Georgia, serif; font-size: 32px; margin-bottom: 4px; }
+  #done-sub { color: var(--ink-soft); margin-bottom: 22px; }
+  .sharecard { background: var(--card); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 20px 22px; margin-bottom: 18px; }
+  .grid-emoji { font-size: 26px; letter-spacing: 3px; line-height: 1.5; margin: 8px 0 4px; }
+  .gridkey { font-size: 11.5px; color: var(--ink-soft); }
+  .bigscore { font-family: Georgia, serif; font-size: 40px; font-weight: 700; }
+  .bigscore span { font-size: 17px; color: var(--ink-soft); font-family: inherit; font-weight: 400; margin-left: 8px; }
+  .statgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 9px; margin-bottom: 18px; }
+  .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 13px 15px; }
+  .stat .sv { font-family: Georgia, serif; font-size: 24px; font-weight: 700; }
+  .stat .sl { font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; line-height: 1.35; }
+  .skewbar { position: relative; height: 34px; margin: 6px 0 18px; }
+  .skewbar .st { position: absolute; top: 14px; left: 0; right: 0; height: 8px; border-radius: 4px;
+    background: linear-gradient(90deg, var(--l0), var(--l1), var(--l2), var(--l3), var(--l4)); opacity: .5; }
+  .skewbar .mid { position: absolute; top: 8px; left: 50%; width: 2px; height: 20px; background: var(--ink-soft); }
+  .skewbar .you { position: absolute; top: 4px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--ink); color: #fff; font-size: 10px; font-weight: 800; transform: translateX(-50%);
+    display: flex; align-items: center; justify-content: center; border: 2px solid var(--paper); }
+  .podium { display: grid; gap: 8px; margin-bottom: 20px; }
+  .prow2 { display: flex; align-items: center; gap: 12px; background: var(--card);
+    border: 1px solid var(--rule); border-radius: 10px; padding: 12px 16px; }
+  .prow2.me { border-color: var(--ink); border-width: 2px; }
+  .prow2 .place { font-family: Georgia, serif; font-size: 19px; font-weight: 700; width: 38px; color: var(--ink-soft); }
+  .prow2.first .place { color: var(--brand); }
+  .prow2 .nm { font-weight: 700; font-size: 16px; flex: 1; }
+  .prow2 .sc { font-family: Georgia, serif; font-size: 21px; font-weight: 700; }
+  .coach { background: #fffdf6; border: 1px solid var(--rule); border-left: 4px solid var(--brand);
+    border-radius: 0 10px 10px 0; padding: 14px 17px; font-size: 14.5px; line-height: 1.55; margin-bottom: 20px; }
+  .coach b { display: block; margin-bottom: 3px; }
+  .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .nextin { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .missed { margin-top: 26px; }
+  .missed h3 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+  .missrow { background: var(--card); border: 1px solid var(--rule); border-radius: 9px;
+    padding: 11px 14px; margin-bottom: 8px; font-size: 13.5px; line-height: 1.5; }
+  .missrow .mh { font-family: Georgia, serif; font-size: 15px; margin-bottom: 3px; }
+  .missrow .mm { color: var(--ink-soft); font-size: 12.5px; }
+
+  #countdown { position: fixed; inset: 0; background: rgba(250,247,242,.93); display: none;
+    align-items: center; justify-content: center; z-index: 50; flex-direction: column; gap: 8px; }
+  #countdown.on { display: flex; }
+  #cd-num { font-family: Georgia, serif; font-size: 110px; font-weight: 700; animation: cdp 1s infinite; }
+  @keyframes cdp { 0% { transform: scale(.7); opacity: .2; } 25% { transform: scale(1.05); opacity: 1; } 100% { opacity: 1; } }
+  #cd-sub { color: var(--ink-soft); font-size: 15px; }
+  .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); background: var(--ink);
+    color: var(--paper); padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: opacity .25s; }
+  .toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+
+<section id="screen-title" class="screen active"><div class="wrap">
+  <div class="edition">
+    <span class="kicker">Daily Edition</span>
+    <span class="date" id="ed-date"></span>
+  </div>
+  <div class="logo">CALL THE <em>LEAN</em></div>
+  <div class="tagline">Ten real headlines, sources hidden. Everyone plays the same ten today &mdash; call each outlet&rsquo;s political lean before the clock does.</div>
+  <div class="streakrow" id="streakrow"></div>
+  <div class="rules">
+    <div><b class="num">1</b><span>A real headline and lede appear with the <b>outlet hidden</b>.</span></div>
+    <div><b class="num">2</b><span>Place it on the spectrum. Exact <b>+200</b>, one notch off +100, two off +25 &mdash; scaled by how fast you lock in.</span></div>
+    <div><b class="num">3</b><span>Three ghost readers race you through the same ten.</span></div>
+    <div><b class="num">4</b><span>One run per day. Come back tomorrow for a fresh edition.</span></div>
+  </div>
+  <div class="spectrum-demo">
+    <div class="b0">Left</div><div class="b1">Lean Left</div><div class="b2">Center</div><div class="b3">Lean Right</div><div class="b4">Right</div>
+  </div>
+  <button class="bigbtn" id="btn-start">Play today&rsquo;s edition</button>
+  <a class="altlink" href="lean.html">unlimited practice &rarr;</a>
+  <div class="ghostnote" id="ghostnote"></div>
+</div></section>
+
+<section id="screen-round" class="screen"><div class="wrap">
+  <div class="topbar">
+    <span class="roundlab" id="round-label">Headline 1 of 10</span>
+    <span class="clock" id="clock">25</span>
+    <span class="yourscore" id="your-score">0</span>
+  </div>
+  <div class="timerbar"><div class="fill" id="timer-fill"></div></div>
+  <div class="dots" id="dots"></div>
+  <div class="article">
+    <div class="masthead">
+      <span class="outlet-hidden" id="mast-hidden">HIDDEN OUTLET</span>
+      <span class="outlet-revealed" id="mast-revealed" style="display:none"></span>
+      <span class="wiretag">real headline &middot; source hidden</span>
+    </div>
+    <h1 id="headline"></h1>
+    <div class="lede" id="lede"></div>
+    <div class="guessbar">
+      <div class="glabel">Where does this outlet sit?</div>
+      <div class="spectrum" id="spectrum">
+        <button class="b0" data-g="0">Left</button>
+        <button class="b1" data-g="1">Lean Left</button>
+        <button class="b2" data-g="2">Center</button>
+        <button class="b3" data-g="3">Lean Right</button>
+        <button class="b4" data-g="4">Right</button>
+      </div>
+    </div>
+    <div class="reveal" id="reveal"></div>
+  </div>
+  <div class="ghostbar" id="ghostbar"></div>
+  <div style="margin-top:16px"><button class="bigbtn dark" id="btn-next" style="display:none">Next headline</button></div>
+</div></section>
+
+<section id="screen-done" class="screen"><div class="wrap">
+  <div class="edition">
+    <span class="kicker">Daily Edition</span>
+    <span class="date" id="done-date"></span>
+  </div>
+  <h2 id="done-title">Today&rsquo;s run</h2>
+  <div id="done-sub"></div>
+  <div class="sharecard">
+    <div class="bigscore" id="done-score"></div>
+    <div class="grid-emoji" id="done-grid"></div>
+    <div class="gridkey">🟩 exact &nbsp; 🟨 one notch &nbsp; 🟧 two &nbsp; 🟥 further &nbsp; ⬛ ran out of time</div>
+  </div>
+  <div class="actions" style="margin-bottom:24px">
+    <button class="bigbtn dark" id="btn-share">Copy result</button>
+    <a class="altlink" href="lean.html">keep practicing &rarr;</a>
+    <span class="nextin" id="nextin"></span>
+  </div>
+  <div class="statgrid" id="done-stats"></div>
+  <div class="glabel">Your compass</div>
+  <div class="skewbar" id="skewbar"><div class="st"></div><div class="mid"></div></div>
+  <div class="podium" id="done-podium"></div>
+  <div class="coach" id="done-coach"></div>
+  <div class="missed" id="done-missed"></div>
+</div></section>
+
+<div id="countdown"><div id="cd-num">3</div><div id="cd-sub"></div></div>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+"use strict";
+
+const LEANS = ["Left", "Lean Left", "Center", "Lean Right", "Right"];
+const LEAN_COLORS = ["var(--l0)", "var(--l1)", "var(--l2)", "var(--l3)", "var(--l4)"];
+const ITEM_SECONDS = 25;
+const PER_EDITION = 10;
+const DIST_PTS = [200, 100, 25, 0, 0];
+const STORE_KEY = "callthelean.v1";
+
+const GHOST_POOL = [
+  { name: "Scoop", color: "#1865f2" },
+  { name: "Kestrel", color: "#0e8a7d" },
+  { name: "Newsprint", color: "#7c5cd6" },
+  { name: "Deadline", color: "#c2417f" },
+  { name: "OffRecord", color: "#b45309" },
+];
+
+const $ = (s) => document.querySelector(s);
+const round5 = (x) => Math.round(x / 5) * 5;
+const clampLean = (x) => Math.max(0, Math.min(4, x));
+
+/* ---------- deterministic per-day randomness ---------- */
+function hashStr(s) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h >>> 0;
+}
+function mulberry32(a) {
+  return function () {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+/* Accepted answers for an item: its outlet rating, plus a second one where the
+   two raters disagree. Distance is measured to whichever is closer. */
+function acceptedFor(item) {
+  return item.alt === undefined ? [item.lean] : [item.lean, item.alt];
+}
+function distanceTo(item, guess) {
+  return Math.min(...acceptedFor(item).map((a) => Math.abs(guess - a)));
+}
+function seededShuffle(arr, rnd) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function todayKey(d) {
+  d = d || new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+function prettyDate(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+}
+
+/* ---------- persistence ---------- */
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+}
+function saveStore(s) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch {}
+}
+function streakOf(store) {
+  const runs = store.runs || {};
+  let streak = 0;
+  const d = new Date();
+  if (!runs[todayKey(d)]) d.setDate(d.getDate() - 1); // today not played yet: streak can still be alive
+  for (;;) {
+    if (!runs[todayKey(d)]) break;
+    streak++;
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+/* ---------- state ---------- */
+let POOL = null, DAY = todayKey(), DEV = new URLSearchParams(location.search).has("dev");
+let G = null, R = null;
+
+/* Stratified pick: 2 items per lean bucket, so no edition is guessable by
+   always answering Center, and every day covers the whole spectrum. */
+function buildEdition(key) {
+  const rnd = mulberry32(hashStr("edition:" + key));
+  const byLean = [[], [], [], [], []];
+  POOL.items.forEach((it) => { if (byLean[it.lean]) byLean[it.lean].push(it); });
+  const perBucket = Math.floor(PER_EDITION / 5);
+  let picked = [];
+  byLean.forEach((bucket) => { picked = picked.concat(seededShuffle(bucket, rnd).slice(0, perBucket)); });
+  const short = PER_EDITION - picked.length;
+  if (short > 0) {
+    const used = new Set(picked.map((i) => i.id));
+    picked = picked.concat(seededShuffle(POOL.items.filter((i) => !used.has(i.id)), rnd).slice(0, short));
+  }
+  return seededShuffle(picked, rnd);
+}
+
+function buildGhosts(key, items) {
+  const rnd = mulberry32(hashStr("ghosts:" + key));
+  return seededShuffle(GHOST_POOL, rnd).slice(0, 3).map((g, gi) => {
+    const skill = 0.35 + rnd() * 0.5;
+    const plan = items.map((it) => {
+      const t = Math.min(ITEM_SECONDS - 2, 3 + rnd() * 18 * (1.3 - 0.5 * skill));
+      const r = rnd();
+      const pExact = 0.32 + 0.45 * skill;
+      let guess;
+      if (r < pExact) guess = it.lean;
+      else if (r < pExact + (1 - pExact) * 0.7) guess = clampLean(it.lean + (rnd() < 0.5 ? -1 : 1));
+      else guess = clampLean(it.lean + (rnd() < 0.5 ? -2 : 2));
+      const d = distanceTo(it, guess);
+      return { t, guess, pts: round5(DIST_PTS[d] * (1 + (ITEM_SECONDS - t) / ITEM_SECONDS)) };
+    });
+    return { ...g, skill, plan, score: 0, idx: gi };
+  });
+}
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+/* ---------- title ---------- */
+function renderTitle() {
+  const store = loadStore();
+  const played = (store.runs || {})[DAY];
+  $("#ed-date").textContent = prettyDate(DAY);
+  const streak = streakOf(store);
+  const total = Object.keys(store.runs || {}).length;
+  $("#streakrow").innerHTML = `
+    <span class="pill">🔥 <b>${streak}</b> day streak</span>
+    <span class="pill">📰 <b>${total}</b> edition${total === 1 ? "" : "s"} played</span>
+    ${played ? `<span class="pill">✅ today: <b>${played.score}</b></span>` : ""}`;
+  const btn = $("#btn-start");
+  if (played && !DEV) {
+    btn.textContent = "See today's result";
+    btn.onclick = () => showDone(played, true);
+  } else {
+    btn.textContent = played ? "Replay (dev)" : "Play today's edition";
+    btn.onclick = startRun;
+  }
+  const contestedCount = Object.values(POOL.outlets).filter((o) => o.alt !== undefined).length;
+  $("#ghostnote").innerHTML = `<b>Where the answers come from.</b> Lean is an <b>outlet-level</b> rating from two independent published raters &mdash;
+    ${POOL.ratingSources.raters.join(" and ")} &mdash; mapped onto one five-point scale (checked ${POOL.ratingSources.checked}).
+    It rates the outlet, not this particular article; the gap between the two is part of what the game teaches.
+    ${contestedCount} of ${Object.keys(POOL.outlets).length} outlets are <b>contested</b>, meaning the raters disagree &mdash; there both answers score full credit, and the reveal says so.
+    <br><br>Headlines and ledes are quoted from publishers&rsquo; own RSS feeds with attribution and a link back to the original.
+    Ghost readers are simulated for now; once real players have run an edition, these become replays of actual runs.
+    Current pool: ${POOL.items.length} headlines from ${Object.keys(POOL.outlets).length} outlets, collected ${POOL.generated}.`;
+}
+
+/* ---------- run ---------- */
+function startRun() {
+  const items = buildEdition(DAY);
+  G = {
+    items, idx: 0, score: 0,
+    ghosts: buildGhosts(DAY, items),
+    results: [],
+  };
+  renderGhostbar();
+  renderDots();
+  show("#screen-round");
+  const cd = $("#countdown"), num = $("#cd-num");
+  $("#cd-sub").textContent = `${PER_EDITION} headlines · ${prettyDate(DAY)} edition`;
+  cd.classList.add("on");
+  let n = 3; num.textContent = n;
+  const cdi = setInterval(() => {
+    n--;
+    if (n > 0) num.textContent = n;
+    else { clearInterval(cdi); cd.classList.remove("on"); startItem(); }
+  }, 800);
+}
+
+function startItem() {
+  const item = G.items[G.idx];
+  R = { item, startT: Date.now(), elapsed: 0, answered: false, over: false, interval: null, ghostFired: [] };
+  $("#round-label").textContent = `Headline ${G.idx + 1} of ${PER_EDITION}`;
+  $("#headline").textContent = item.headline;
+  $("#lede").textContent = item.lede;
+  $("#mast-hidden").style.display = "";
+  $("#mast-revealed").style.display = "none";
+  $("#reveal").classList.remove("on");
+  $("#reveal").innerHTML = "";
+  $("#btn-next").style.display = "none";
+  document.querySelectorAll("#spectrum button").forEach((b) => { b.disabled = false; b.classList.remove("picked"); });
+  renderDots();
+  R.interval = setInterval(tick, 100);
+}
+
+function tick() {
+  R.elapsed = (Date.now() - R.startT) / 1000;
+  const left = Math.max(0, ITEM_SECONDS - R.elapsed);
+  $("#clock").textContent = Math.ceil(left);
+  $("#clock").classList.toggle("low", left <= 7);
+  const fill = $("#timer-fill");
+  fill.style.width = (left / ITEM_SECONDS * 100) + "%";
+  fill.classList.toggle("low", left <= 7);
+  G.ghosts.forEach((g, i) => {
+    const p = g.plan[G.idx];
+    if (!R.ghostFired[i] && p.t <= R.elapsed) {
+      R.ghostFired[i] = true;
+      g.score += p.pts;
+      renderGhostbar();
+    }
+  });
+  if (left <= 0 && !R.over) reveal(null);
+}
+
+function onGuess(g) {
+  if (!R || R.answered || R.over) return;
+  R.answered = true;
+  document.querySelector(`#spectrum button[data-g="${g}"]`).classList.add("picked");
+  reveal(g);
+}
+
+function reveal(playerGuess) {
+  R.over = true;
+  clearInterval(R.interval);
+  document.querySelectorAll("#spectrum button").forEach((b) => { b.disabled = true; });
+  const item = R.item;
+
+  // any ghost that hadn't locked in yet finishes now
+  G.ghosts.forEach((g, i) => {
+    if (!R.ghostFired[i]) { R.ghostFired[i] = true; g.score += g.plan[G.idx].pts; }
+  });
+
+  let pts = 0, dist = null;
+  if (playerGuess !== null) {
+    dist = distanceTo(item, playerGuess);
+    pts = round5(DIST_PTS[dist] * (1 + Math.max(0, ITEM_SECONDS - R.elapsed) / ITEM_SECONDS));
+    G.score += pts;
+  }
+  // for the compass stat, measure skew against whichever accepted answer is nearest,
+  // so a contested outlet can't manufacture a lean that isn't there
+  const nearest = playerGuess === null ? item.lean
+    : acceptedFor(item).reduce((a, b) => Math.abs(playerGuess - b) < Math.abs(playerGuess - a) ? b : a);
+  G.results.push({
+    id: item.id, outlet: item.outlet, headline: item.headline,
+    truth: item.lean, accepted: acceptedFor(item), nearest,
+    guess: playerGuess, dist, pts, t: Math.min(ITEM_SECONDS, R.elapsed),
+  });
+
+  const el = $("#your-score");
+  el.textContent = G.score;
+  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
+  renderGhostbar();
+  renderDots();
+
+  $("#mast-hidden").style.display = "none";
+  const mr = $("#mast-revealed");
+  mr.style.display = ""; mr.textContent = item.outlet;
+
+  const pins = [];
+  if (playerGuess !== null) pins.push({ label: "You", color: "#1c1a17", pos: playerGuess, below: false, off: 0 });
+  G.ghosts.forEach((g, i) => pins.push({ label: g.name[0], color: g.color, pos: g.plan[G.idx].guess, below: true, off: i }));
+  const pinHtml = pins.map((p) => {
+    const base = (p.pos + 0.5) * 20;
+    const jitter = p.below ? (p.off - 1) * 3.2 : 0;
+    const txt = p.below ? p.label : "Y";
+    return `<div class="pin${p.below ? " below" : ""}" style="left:${base + jitter}%; background:${p.color}">${txt}</div>`;
+  }).join("");
+
+  const accepted = acceptedFor(item);
+  const outletMeta = POOL.outlets[item.outlet] || {};
+  const chips = accepted.map((a) =>
+    `<span class="ratechip" style="background:${LEAN_COLORS[a]}">${LEANS[a]}</span>`).join("");
+  const raters = `<div class="raters">${outletMeta.mbfc ? `MBFC: <b>${outletMeta.mbfc}</b>` : ""}${
+    outletMeta.allsides ? ` &nbsp;·&nbsp; AllSides: <b>${outletMeta.allsides}</b>` : ""}</div>`;
+  const caveat = item.contested
+    ? `<div class="caveat">⚖️ ${item.contested}</div>`
+    : (item.singleSource ? `<div class="caveat">⚠️ ${item.singleSource}</div>` : "");
+
+  $("#reveal").innerHTML = `
+    <div class="rhead">
+      <span class="rout">${item.outlet}</span>
+      ${chips}
+      <span class="rpts ${pts > 0 ? "plus" : "zero"}">${playerGuess === null ? "time's up" : "+" + pts}</span>
+    </div>
+    ${raters}
+    <div class="marks">
+      <div class="track">${[0, 1, 2, 3, 4].map((i) =>
+        `<div class="${accepted.includes(i) ? "truth" : ""}" style="background:${LEAN_COLORS[i]}"></div>`).join("")}</div>
+      ${pinHtml}
+    </div>
+    ${caveat}
+    ${item.tell
+      ? `<div class="tell"><b>The tell:</b> ${item.tell}</div>`
+      : (outletMeta.note ? `<div class="tell"><b>House style:</b> ${outletMeta.note}</div>` : "")}
+    ${item.url ? `<a class="readorig" href="${item.url}" target="_blank" rel="noopener noreferrer">read the original at ${item.outlet} ↗</a>` : ""}`;
+  $("#reveal").classList.add("on");
+
+  const nb = $("#btn-next");
+  nb.textContent = (G.idx + 1 < PER_EDITION) ? "Next headline" : "See your result";
+  nb.style.display = "";
+  nb.focus();
+}
+
+function nextItem() {
+  G.idx++;
+  if (G.idx < PER_EDITION) startItem();
+  else finishRun();
+}
+
+function renderDots() {
+  $("#dots").innerHTML = G.items.map((_, i) => {
+    const r = G.results[i];
+    let cls = "";
+    if (r) cls = r.guess === null ? "dx" : "d" + Math.min(3, r.dist);
+    else if (i === G.idx) cls = "cur";
+    return `<span class="${cls}"></span>`;
+  }).join("");
+}
+
+function renderGhostbar() {
+  $("#ghostbar").innerHTML =
+    `<span class="gchip me"><span class="mini" style="background:#1c1a17">Y</span>You <span class="gs">${G.score}</span></span>` +
+    G.ghosts.map((g) => `<span class="gchip"><span class="mini" style="background:${g.color}">${g.name[0]}</span>${g.name} <span class="gs">${g.score}</span></span>`).join("");
+}
+
+/* ---------- finish ---------- */
+function gridFor(results) {
+  return results.map((r) => r.guess === null ? "⬛" : ["🟩", "🟨", "🟧", "🟥", "🟥"][r.dist]).join("");
+}
+
+function finishRun() {
+  const exact = G.results.filter((r) => r.dist === 0).length;
+  const answered = G.results.filter((r) => r.guess !== null);
+  const skew = answered.length
+    ? answered.reduce((a, r) => a + (r.guess - (r.nearest !== undefined ? r.nearest : r.truth)), 0) / answered.length : 0;
+  const avgDist = G.results.length
+    ? G.results.reduce((a, r) => a + (r.guess === null ? 2.5 : r.dist), 0) / G.results.length : 0;
+  const run = {
+    date: DAY, score: G.score, exact, skew, avgDist,
+    grid: gridFor(G.results),
+    timeouts: G.results.filter((r) => r.guess === null).length,
+    ghosts: G.ghosts.map((g) => ({ name: g.name, score: g.score })),
+    results: G.results,
+  };
+  const store = loadStore();
+  store.runs = store.runs || {};
+  if (!store.runs[DAY] || DEV) store.runs[DAY] = run;
+  saveStore(store);
+  showDone(run, false);
+}
+
+function showDone(run, replay) {
+  $("#done-date").textContent = prettyDate(run.date);
+  const ghosts = (run.ghosts || []).slice();
+  const board = [{ name: "You", score: run.score, me: true }, ...ghosts].sort((a, b) => b.score - a.score);
+  const place = board.findIndex((p) => p.me) + 1;
+
+  $("#done-title").textContent = place === 1 ? "You took the front page." : `${board[0].name} took today's front page.`;
+  $("#done-sub").textContent = replay
+    ? "You've already run today's edition — here's how it went."
+    : `${run.exact} of ${PER_EDITION} exact, ${place === 1 ? "first" : ["", "first", "second", "third", "fourth"][place]} of four.`;
+
+  $("#done-score").innerHTML = `${run.score}<span>points</span>`;
+  $("#done-grid").textContent = run.grid;
+
+  const skewWord = Math.abs(run.skew) < 0.25 ? "well calibrated"
+    : (run.skew < 0 ? "you read outlets further left than their rating" : "you read outlets further right than their rating");
+  $("#done-stats").innerHTML = `
+    <div class="stat"><div class="sv">${run.exact}/${PER_EDITION}</div><div class="sl">exact calls</div></div>
+    <div class="stat"><div class="sv">${run.avgDist.toFixed(1)}</div><div class="sl">average miss, in notches</div></div>
+    <div class="stat"><div class="sv">${run.skew > 0 ? "+" : ""}${run.skew.toFixed(1)}</div><div class="sl">compass skew &mdash; ${skewWord}</div></div>
+    <div class="stat"><div class="sv">${streakOf(loadStore())}</div><div class="sl">day streak</div></div>`;
+
+  const pct = 50 + (run.skew / 4) * 50;
+  const sb = $("#skewbar");
+  sb.querySelectorAll(".you").forEach((e) => e.remove());
+  const you = document.createElement("div");
+  you.className = "you"; you.style.left = Math.max(3, Math.min(97, pct)) + "%"; you.textContent = "You";
+  sb.appendChild(you);
+
+  $("#done-podium").innerHTML = board.map((p, i) => `
+    <div class="prow2${p.me ? " me" : ""}${i === 0 ? " first" : ""}">
+      <span class="place">${["1st", "2nd", "3rd", "4th"][i]}</span>
+      <span class="nm">${p.name}</span><span class="sc">${p.score}</span></div>`).join("");
+
+  let tip;
+  if (run.exact >= 7) tip = "Sharp compass. Push further: after each call, name the specific cue that tipped you off — a label like “far-left,” a prosecuting verb, whose voices got quoted, or the fact that this story got covered at all. Naming the cue is what transfers to the news you read tomorrow.";
+  else if (Math.abs(run.skew) >= 0.7) tip = `Across today's ten you placed outlets ${run.skew > 0 ? "to the right" : "to the left"} of their published ratings. A consistent skew usually means your own reference point sits ${run.skew > 0 ? "left" : "right"} of the rating consensus — which is worth knowing, and is the one thing this game measures that no news app will tell you.`;
+  else if (run.timeouts >= 3) tip = "The clock beat you three or more times. Lean is usually visible in the first line — read the verbs and the labels before the details, then commit. Speed is part of the skill.";
+  else if (run.avgDist > 1.2) tip = "Lean hides in word choice (“controversial,” “so-called,” “regime”), in who gets quoted, and in which stories get covered at all. Neutral copy reports; slanted copy prosecutes. Watch the verbs.";
+  else tip = "Solid run. The genuinely hard items are straight news from slanted outlets — there the honest answer is that the article alone can't tell you, and noticing that is its own skill.";
+  $("#done-coach").innerHTML = `<b>Coach's note</b>${tip}`;
+
+  const misses = (run.results || []).filter((r) => r.dist === null || r.dist >= 2);
+  $("#done-missed").innerHTML = misses.length ? `<h3>Worth a second look</h3>` + misses.map((r) => `
+    <div class="missrow">
+      <div class="mh">${r.headline}</div>
+      <div class="mm">${r.outlet} is rated <b>${(r.accepted || [r.truth]).map((a) => LEANS[a]).join(" or ")}</b>${r.guess === null ? " — you ran out of time." : ` — you called it ${LEANS[r.guess]}.`}</div>
+    </div>`).join("") : "";
+
+  $("#btn-share").onclick = () => shareRun(run);
+  show("#screen-done");
+  startNextInTimer();
+}
+
+function shareRun(run) {
+  const skewTxt = Math.abs(run.skew) < 0.25 ? "compass: centered"
+    : `compass: ${run.skew > 0 ? "+" : ""}${run.skew.toFixed(1)} ${run.skew > 0 ? "right" : "left"}`;
+  const text = `Call the Lean — ${prettyDate(run.date)}\n${run.score} pts · ${run.exact}/${PER_EDITION} exact\n${run.grid}\n${skewTxt}`;
+  const done = () => {
+    const t = $("#toast");
+    t.classList.add("on");
+    setTimeout(() => t.classList.remove("on"), 1400);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); done(); } catch {}
+  ta.remove();
+}
+
+function startNextInTimer() {
+  // editions turn over when the daily pipeline publishes a new pool,
+  // not at the player's local midnight — so no countdown, just the promise
+  $("#nextin").textContent = "a fresh edition drops every morning";
+}
+
+/* ---------- boot ---------- */
+document.querySelectorAll("#spectrum button").forEach((b) => {
+  b.addEventListener("click", () => onGuess(+b.dataset.g));
+});
+$("#btn-next").addEventListener("click", nextItem);
+
+fetch("data/items.json")
+  .then((r) => r.json())
+  .then((json) => {
+    POOL = json;
+    // The edition is defined by the data refresh, not the player's clock:
+    // everyone worldwide gets the same edition, and it changes atomically
+    // when the daily pipeline commits a new pool.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(json.generated || "")) DAY = json.generated;
+    renderTitle();
+  })
+  .catch(() => {
+    $("#streakrow").innerHTML = `<span class="pill">Couldn't load today's headlines — is the prototype server running?</span>`;
+    $("#btn-start").disabled = true;
+  });
+</script>
+</body>
+</html>

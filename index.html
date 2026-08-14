@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot the Spin</title>
+<style>
+  :root {
+    --paper: #faf7f2;
+    --card: #ffffff;
+    --ink: #1c1a17;
+    --ink-soft: #6b655c;
+    --rule: #e4ded4;
+    --brand: #c8342a;
+    --amber: #b45309;
+    --good: #1a7f4e;
+
+    --c-loaded: #d64550;
+    --c-opinion: #7c5cd6;
+    --c-unsourced: #d97706;
+    --c-sensational: #c2417f;
+    --c-context: #0e8a7d;
+
+    --t-loaded: #fbe9ea;
+    --t-opinion: #efeafb;
+    --t-unsourced: #fdf0dd;
+    --t-sensational: #f9e7f1;
+    --t-context: #e2f3f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+  }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ---------- title screen ---------- */
+  #screen-title { max-width: 860px; margin: 0 auto; padding: 48px 24px 64px; }
+  .logo {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 56px; font-weight: 700; letter-spacing: -1px;
+    border-top: 4px solid var(--ink); border-bottom: 1.5px solid var(--ink);
+    padding: 10px 0 14px; margin-bottom: 6px;
+  }
+  .logo em { color: var(--brand); font-style: normal; }
+  .tagline { color: var(--ink-soft); font-size: 17px; margin: 14px 0 34px; }
+  .howto { display: grid; gap: 10px; margin-bottom: 34px; }
+  .howto div { display: flex; gap: 12px; align-items: baseline; font-size: 15.5px; }
+  .howto b.num {
+    color: var(--brand); font-family: Georgia, serif; font-size: 18px; min-width: 18px;
+  }
+  .legend-title {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 12px;
+  }
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-bottom: 40px; }
+  .legend .cardt {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 12px 14px;
+  }
+  .cardt .tname { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .cardt .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .cardt .tdesc { font-size: 13px; color: var(--ink-soft); line-height: 1.45; }
+  .bigbtn {
+    display: inline-block; background: var(--ink); color: var(--paper); border: none;
+    font-size: 18px; font-weight: 700; padding: 14px 34px; border-radius: 10px; cursor: pointer;
+    font-family: inherit;
+  }
+  .bigbtn:hover { background: #000; }
+  .bigbtn.red { background: var(--brand); }
+  .bigbtn.red:hover { background: #a92a21; }
+
+  /* ---------- matchmaking ---------- */
+  #screen-match { max-width: 640px; margin: 0 auto; padding: 90px 24px; text-align: center; }
+  #screen-match h2 { font-family: Georgia, serif; font-size: 28px; margin-bottom: 8px; }
+  #match-status { color: var(--ink-soft); margin-bottom: 34px; }
+  .lobby { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .lobby .seat {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 18px 8px; opacity: 0; transform: translateY(8px); transition: all .35s;
+  }
+  .lobby .seat.in { opacity: 1; transform: none; }
+  .seat .avatar {
+    width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 17px;
+  }
+  .seat .pname { font-size: 14px; font-weight: 600; }
+  .seat .psub { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+
+  /* ---------- round screen ---------- */
+  #screen-round { max-width: 1060px; margin: 0 auto; padding: 18px 24px 60px; }
+  .topbar { display: flex; align-items: center; gap: 18px; margin-bottom: 6px; }
+  .topbar .roundlab {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap;
+  }
+  .topbar .yourscore {
+    margin-left: auto; font-family: Georgia, serif; font-size: 26px; font-weight: 700; white-space: nowrap;
+  }
+  .yourscore.pop { animation: pop .35s; }
+  .yourscore.neg { color: var(--brand); }
+  @keyframes pop { 40% { transform: scale(1.22); } }
+  .clock { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 18px; width: 52px; text-align: right; }
+  .clock.low { color: var(--brand); }
+  .timerbar { height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; margin-bottom: 18px; }
+  .timerbar .fill { height: 100%; width: 100%; background: var(--ink); border-radius: 3px; }
+  .timerbar .fill.low { background: var(--brand); }
+
+  .roundgrid { display: grid; grid-template-columns: 1fr 250px; gap: 22px; align-items: start; }
+  @media (max-width: 900px) { .roundgrid { grid-template-columns: 1fr; } }
+
+  .article {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 30px 34px 34px;
+  }
+  .masthead { border-bottom: 3px double var(--ink); padding-bottom: 10px; margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: baseline; }
+  .outlet { font-family: Georgia, serif; font-size: 20px; font-weight: 700; letter-spacing: .5px; }
+  .wiretag { font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-soft); }
+  .article h1 { font-family: Georgia, serif; font-size: 27px; line-height: 1.25; margin-bottom: 14px; }
+  .body-text { font-family: Georgia, serif; font-size: 17.5px; line-height: 1.75; }
+
+  .sent { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background .12s; }
+  .interactive .sent:hover { background: #f1ecdf; box-shadow: 0 1.5px 0 var(--ink-soft); }
+  .sent.pending { background: #fff3cd; box-shadow: 0 2px 0 var(--amber); cursor: default; }
+  .sent.resolved, .sent.flagged-clean { cursor: default; }
+  .interactive .sent.resolved:hover, .interactive .sent.flagged-clean:hover { box-shadow: none; }
+  .sent.b-loaded      { background: var(--t-loaded);      box-shadow: 0 2px 0 var(--c-loaded); }
+  .sent.b-opinion     { background: var(--t-opinion);     box-shadow: 0 2px 0 var(--c-opinion); }
+  .sent.b-unsourced   { background: var(--t-unsourced);   box-shadow: 0 2px 0 var(--c-unsourced); }
+  .sent.b-sensational { background: var(--t-sensational); box-shadow: 0 2px 0 var(--c-sensational); }
+  .sent.b-context     { background: var(--t-context);     box-shadow: 0 2px 0 var(--c-context); }
+  .sent.flagged-clean { background: #eeece7; text-decoration: line-through; text-decoration-color: #b7b0a3; }
+  .sent.shake { animation: shake .35s; }
+  @keyframes shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+  .picker {
+    display: block; background: #fffdf6; border: 1.5px solid var(--amber); border-radius: 10px;
+    padding: 12px 14px; margin: 12px 0; font-family: -apple-system, "Segoe UI", sans-serif;
+  }
+  .picker .plabel { font-size: 13px; font-weight: 700; margin-bottom: 9px; }
+  .picker .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .picker button {
+    font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    background: #fff; border: 1.5px solid; border-radius: 999px; padding: 6px 13px;
+  }
+  .picker button:hover { color: #fff; }
+  .picker button.o-loaded      { border-color: var(--c-loaded);      color: var(--c-loaded); }
+  .picker button.o-loaded:hover      { background: var(--c-loaded);      color:#fff; }
+  .picker button.o-opinion     { border-color: var(--c-opinion);     color: var(--c-opinion); }
+  .picker button.o-opinion:hover     { background: var(--c-opinion);     color:#fff; }
+  .picker button.o-unsourced   { border-color: var(--c-unsourced);   color: var(--c-unsourced); }
+  .picker button.o-unsourced:hover   { background: var(--c-unsourced);   color:#fff; }
+  .picker button.o-sensational { border-color: var(--c-sensational); color: var(--c-sensational); }
+  .picker button.o-sensational:hover { background: var(--c-sensational); color:#fff; }
+  .picker button.o-context     { border-color: var(--c-context);     color: var(--c-context); }
+  .picker button.o-context:hover     { background: var(--c-context);     color:#fff; }
+
+  .verdict {
+    display: block; border-left: 3px solid var(--rule); padding: 7px 12px; margin: 10px 0 12px;
+    font-family: -apple-system, "Segoe UI", sans-serif; font-size: 13.5px; line-height: 1.5;
+    color: var(--ink-soft); background: #fcfaf5; border-radius: 0 8px 8px 0;
+  }
+  .verdict .vhead { font-weight: 700; color: var(--ink); margin-bottom: 2px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .verdict .pts { font-weight: 800; }
+  .verdict .pts.plus { color: var(--good); }
+  .verdict .pts.minus { color: var(--brand); }
+  .v-loaded { border-left-color: var(--c-loaded); }
+  .v-opinion { border-left-color: var(--c-opinion); }
+  .v-unsourced { border-left-color: var(--c-unsourced); }
+  .v-sensational { border-left-color: var(--c-sensational); }
+  .v-context { border-left-color: var(--c-context); }
+  .verdict .fixline { margin-top: 5px; font-style: italic; }
+  .verdict .fixline b { color: var(--ink); font-style: normal; }
+
+  /* ---------- rail ---------- */
+  .rail { position: sticky; top: 16px; }
+  .rail h3 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+  .board { position: relative; height: 192px; margin-bottom: 20px; }
+  .prow {
+    position: absolute; left: 0; right: 0; height: 42px; transition: top .4s;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+    display: flex; align-items: center; gap: 9px; padding: 0 10px;
+  }
+  .prow.me { border-color: var(--ink); border-width: 1.5px; }
+  .prow .mini {
+    width: 24px; height: 24px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .prow .pn { font-size: 13px; font-weight: 600; flex: 1 1 auto; white-space: nowrap; overflow: hidden; }
+  .prow .pips { font-size: 9px; letter-spacing: 2px; color: var(--ink-soft); }
+  .prow .pips b { color: var(--good); }
+  .prow .ps { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 14px; }
+  .feed { display: flex; flex-direction: column; gap: 6px; }
+  .feed .fentry {
+    font-size: 12.5px; color: var(--ink-soft); background: var(--card); border: 1px solid var(--rule);
+    border-radius: 7px; padding: 7px 10px; line-height: 1.35; animation: fin .3s;
+  }
+  .feed .fentry b { color: var(--ink); }
+  @keyframes fin { from { opacity: 0; transform: translateY(-4px); } }
+
+  /* ---------- countdown ---------- */
+  #countdown {
+    position: fixed; inset: 0; background: rgba(250,247,242,.92); display: none;
+    align-items: center; justify-content: center; z-index: 50; flex-direction: column; gap: 10px;
+  }
+  #countdown.on { display: flex; }
+  #cd-num { font-family: Georgia, serif; font-size: 120px; font-weight: 700; animation: cdp 1s infinite; }
+  @keyframes cdp { 0% { transform: scale(.7); opacity: .2; } 25% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  #cd-sub { color: var(--ink-soft); font-size: 15px; }
+
+  /* ---------- recap & final ---------- */
+  #screen-recap, #screen-final { max-width: 820px; margin: 0 auto; padding: 30px 24px 80px; }
+  .recap-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
+  .recap-head h2 { font-family: Georgia, serif; font-size: 26px; }
+  .recap-head .sub { color: var(--ink-soft); font-size: 14px; }
+  .standings-mini { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 26px; }
+  .standings-mini .chip {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 7px 14px; font-size: 13.5px; font-weight: 600; display: flex; gap: 8px; align-items: center;
+  }
+  .standings-mini .chip.me { border-color: var(--ink); border-width: 1.5px; }
+  .standings-mini .rk { color: var(--ink-soft); font-weight: 800; }
+  .tagchip {
+    display: inline-block; font-family: -apple-system, "Segoe UI", sans-serif; font-size: 11px; font-weight: 800;
+    letter-spacing: .5px; text-transform: uppercase; border-radius: 999px; padding: 2px 9px;
+    color: #fff; vertical-align: 2px; margin-left: 6px; white-space: nowrap;
+  }
+  .tc-loaded { background: var(--c-loaded); } .tc-opinion { background: var(--c-opinion); }
+  .tc-unsourced { background: var(--c-unsourced); } .tc-sensational { background: var(--c-sensational); }
+  .tc-context { background: var(--c-context); }
+  .tagchip.missed { background: var(--brand); }
+  .tagchip.got { background: var(--good); }
+  .tagchip.clean { background: #b7b0a3; }
+  .recap-actions, .final-actions { margin-top: 30px; display: flex; gap: 14px; align-items: center; }
+
+  #screen-final h2 { font-family: Georgia, serif; font-size: 34px; margin-bottom: 4px; }
+  #final-sub { color: var(--ink-soft); margin-bottom: 26px; }
+  .podium { display: grid; gap: 10px; margin-bottom: 30px; }
+  .podium .prow2 {
+    display: flex; align-items: center; gap: 14px; background: var(--card);
+    border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px;
+  }
+  .prow2.me { border-color: var(--ink); border-width: 2px; }
+  .prow2 .place { font-family: Georgia, serif; font-size: 22px; font-weight: 700; width: 44px; color: var(--ink-soft); }
+  .prow2.first .place { color: var(--brand); }
+  .prow2 .nm { font-weight: 700; font-size: 17px; flex: 1; }
+  .prow2 .sc { font-family: Georgia, serif; font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .statgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 22px; }
+  .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; }
+  .stat .sv { font-family: Georgia, serif; font-size: 26px; font-weight: 700; }
+  .stat .sl { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+  .coach {
+    background: #fffdf6; border: 1px solid var(--rule); border-left: 4px solid var(--brand);
+    border-radius: 0 10px 10px 0; padding: 14px 18px; font-size: 14.5px; line-height: 1.55;
+  }
+  .coach b { display: block; margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<!-- =================== TITLE =================== -->
+<section id="screen-title" class="screen active">
+  <div class="logo">SPOT THE <em>SPIN</em></div>
+  <div class="tagline">Read fast. See through it faster. A competitive game for training your bias radar.</div>
+
+  <div class="howto">
+    <div><b class="num">1</b><span>A realistic (but fictional) news article appears. Somewhere in it, the writing is slanted.</span></div>
+    <div><b class="num">2</b><span><b>Click any sentence that shows bias</b>, then name the technique. The earlier you find it, the more points it&rsquo;s worth.</span></div>
+    <div><b class="num">3</b><span>Flagging a clean sentence costs <b>&minus;50</b>. Not everything is biased &mdash; precision wins games.</span></div>
+    <div><b class="num">4</b><span>Three rounds against three other readers. Highest score takes the front page.</span></div>
+  </div>
+
+  <div class="legend-title">The five techniques</div>
+  <div class="legend" id="legend"></div>
+
+  <button class="bigbtn red" id="btn-find-match">Find a match</button>
+</section>
+
+<!-- =================== MATCHMAKING =================== -->
+<section id="screen-match" class="screen">
+  <h2>Finding readers&hellip;</h2>
+  <div id="match-status">Searching for opponents at your level</div>
+  <div class="lobby" id="lobby"></div>
+</section>
+
+<!-- =================== ROUND =================== -->
+<section id="screen-round" class="screen">
+  <div class="topbar">
+    <span class="roundlab" id="round-label">Round 1 of 3</span>
+    <span class="clock" id="clock">70</span>
+    <span class="yourscore" id="your-score">0</span>
+  </div>
+  <div class="timerbar"><div class="fill" id="timer-fill"></div></div>
+  <div class="roundgrid">
+    <div class="article interactive" id="article"></div>
+    <div class="rail">
+      <h3>Live standings</h3>
+      <div class="board" id="board"></div>
+      <h3>Wire</h3>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== RECAP =================== -->
+<section id="screen-recap" class="screen">
+  <div class="recap-head">
+    <h2 id="recap-title">Round 1 debrief</h2>
+    <span class="sub" id="recap-sub"></span>
+  </div>
+  <div class="standings-mini" id="recap-standings"></div>
+  <div class="article" id="recap-article"></div>
+  <div class="recap-actions">
+    <button class="bigbtn" id="btn-next-round">Next round</button>
+  </div>
+</section>
+
+<!-- =================== FINAL =================== -->
+<section id="screen-final" class="screen">
+  <h2 id="final-title">Front page!</h2>
+  <div id="final-sub"></div>
+  <div class="podium" id="podium"></div>
+  <div class="statgrid" id="statgrid"></div>
+  <div class="coach" id="coach"></div>
+  <div class="final-actions">
+    <button class="bigbtn red" id="btn-again">Play again</button>
+  </div>
+</section>
+
+<div id="countdown"><div id="cd-num">3</div><div id="cd-sub"></div></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   CONTENT — bias techniques and fictional training articles
+   ============================================================ */
+
+const TYPES = {
+  loaded:      { name: "Loaded language",      desc: "Emotionally charged words that push a feeling before the facts do." },
+  opinion:     { name: "Opinion as fact",       desc: "A judgment call written in the news voice, as if it were settled truth." },
+  unsourced:   { name: "Unsubstantiated claim", desc: "“Everyone agrees,” “insiders say” — an assertion with no one behind it." },
+  sensational: { name: "Sensationalism",        desc: "Drama inflated past what the facts support. Crisis! Chaos! Bloodbath!" },
+  context:     { name: "Missing context",       desc: "A true-sounding stat or superlative stripped of the baseline that gives it meaning." },
+};
+const TYPE_KEYS = Object.keys(TYPES);
+
+/* Each article: outlet, headline (clickable sentence), body sentences.
+   A sentence with a `bias` field is a planted target; `fix` is the straight rewrite shown in the debrief. */
+const ARTICLES = [
+  {
+    outlet: "The Harborview Ledger",
+    headline: { text: "Harborview council approves $18M downtown parking garage" },
+    sentences: [
+      { text: "The Harborview city council voted 5–2 Tuesday to approve an $18 million parking garage on Dock Street." },
+      { text: "The project will at last drag the city’s crumbling downtown into the modern era.",
+        bias: { type: "loaded",
+          explain: "“At last,” “crumbling,” and “drag into the modern era” are judgment words doing persuasion, not reporting.",
+          fix: "Supporters say the project will modernize downtown." } },
+      { text: "The garage will add roughly 400 spaces two blocks from the waterfront district." },
+      { text: "Everyone agrees parking is the biggest obstacle to downtown’s growth.",
+        bias: { type: "unsourced",
+          explain: "“Everyone agrees” — no one is named and nothing is cited. Who agrees, exactly?",
+          fix: "Several business owners at the hearing said parking shortages hurt downtown shops." } },
+      { text: "Councilwoman Rita Alvarez, who has repeatedly stood in the way of downtown progress, cast one of the two no votes.",
+        bias: { type: "loaded",
+          explain: "Describing dissent as “standing in the way of progress” smuggles a verdict into a biography.",
+          fix: "Councilwoman Rita Alvarez, who has opposed several downtown projects, cast one of the two no votes." } },
+      { text: "Alvarez said the money would be better spent on bus service." },
+      { text: "Construction is scheduled to begin in March." },
+    ],
+  },
+  {
+    outlet: "The Daily Current",
+    headline: { text: "Bloodbath at Brightpath as company spirals toward collapse",
+      bias: { type: "sensational",
+        explain: "“Bloodbath” and “spirals toward collapse” add drama the facts below don’t support — an 8% layoff is serious, not a collapse.",
+        fix: "Brightpath to lay off 120 employees, about 8% of staff" } },
+    sentences: [
+      { text: "Software firm Brightpath said Monday it will lay off 120 employees, about 8 percent of its workforce." },
+      { text: "CEO Dana Okafor said the cuts will “refocus the company on its core products.”" },
+      { text: "Insiders whisper that far deeper cuts are already being planned behind closed doors.",
+        bias: { type: "unsourced",
+          explain: "“Insiders whisper” — anonymous, unverifiable, unfalsifiable. A claim with no one behind it.",
+          fix: "The company declined to say whether more cuts are planned." } },
+      { text: "Brightpath’s stock has plunged 40 percent from January’s record high.",
+        bias: { type: "context",
+          explain: "True — but most software stocks fell over the same stretch, and “from a record high” is the most dramatic baseline available.",
+          fix: "Brightpath’s stock is down 40 percent from its January peak, roughly in line with the broader software sector." } },
+      { text: "Laid-off workers will receive eight weeks of severance and job-placement help." },
+      { text: "Brightpath employs about 1,500 people across three offices." },
+    ],
+  },
+  {
+    outlet: "Metro Voice",
+    headline: { text: "Lakewood board to vote on classroom phone ban next week" },
+    sentences: [
+      { text: "The Lakewood school board will vote Thursday on a proposal to ban phone use during class hours." },
+      { text: "It is the obvious choice for any district that takes learning seriously.",
+        bias: { type: "opinion",
+          explain: "A pure editorial verdict — “obvious,” “takes learning seriously” — delivered in the news voice as if it were fact.",
+          fix: "Supporters argue the ban would reduce classroom distractions." } },
+      { text: "A district survey found 62 percent of teachers support the ban, while parent opinion was split." },
+      { text: "Studies prove that phones destroy young people’s ability to concentrate.",
+        bias: { type: "unsourced",
+          explain: "Which studies? “Prove” and “destroy” overstate a contested research question — and nothing is cited.",
+          fix: "Some studies link heavy phone use to reduced attention in class; others find small or mixed effects." } },
+      { text: "Some parents raised concerns about reaching their children during emergencies." },
+      { text: "Board president Miguel Santos, still scrambling to salvage his reputation after last year’s budget fiasco, has pushed hard for the measure.",
+        bias: { type: "loaded",
+          explain: "“Scrambling,” “salvage his reputation,” “fiasco” — a motive is assigned with charged words, not evidence.",
+          fix: "Board president Miguel Santos, who faced criticism over last year’s budget shortfall, has advocated for the measure." } },
+    ],
+  },
+  {
+    outlet: "The Ridgeline Observer",
+    headline: { text: "Corven Chemical fined $2 million over river discharge" },
+    sentences: [
+      { text: "State regulators fined Corven Chemical $2 million last week for discharging industrial waste into the Miller River." },
+      { text: "It is the largest fine the agency has ever issued.",
+        bias: { type: "context",
+          explain: "Sounds sweeping — but the agency was created four years ago, so “largest ever” covers a very short history. Superlatives need a baseline.",
+          fix: "It is the largest fine issued by the agency since its creation in 2022." } },
+      { text: "Corven, which rakes in billions while local families worry about their tap water, said it will appeal.",
+        bias: { type: "loaded",
+          explain: "“Rakes in” is a sneer, and yoking revenue to families’ fear inside one sentence is framing, not fact.",
+          fix: "Corven, which reported $2.1 billion in revenue last year, said it will appeal." } },
+      { text: "Residents downstream have reported unusual odors near the river since April." },
+      { text: "The company’s so-called cleanup plan promises results by 2028.",
+        bias: { type: "loaded",
+          explain: "“So-called” is a one-word eye-roll — it tells you to distrust the plan before you’ve heard it.",
+          fix: "The company’s cleanup plan projects results by 2028." } },
+      { text: "Independent water testing is scheduled to begin next month." },
+    ],
+  },
+  {
+    outlet: "The Beacon-Times",
+    headline: { text: "Dazzling riverfront stadium set to transform the region",
+      bias: { type: "sensational",
+        explain: "“Dazzling” and “transform the region” is a sales pitch — and “set to” treats a proposal as a done deal.",
+        fix: "City, Condors unveil $300M stadium proposal" } },
+    sentences: [
+      { text: "The city and the Condors baseball club unveiled a proposal Friday for a $300 million stadium near the rail yards." },
+      { text: "The team would contribute $90 million, with the remainder funded through public bonds." },
+      { text: "Economists agree that stadiums pay for themselves through new jobs and tourism.",
+        bias: { type: "unsourced",
+          explain: "No economist is named — and published research mostly finds the opposite. “Experts agree” should make you ask: which ones?",
+          fix: "The team’s consultants project new jobs and tourism revenue; independent economists are often skeptical of such projections." } },
+      { text: "Attendance at Condors games is up 30 percent this season.",
+        bias: { type: "context",
+          explain: "Up 30 percent — from what? Last season was the team’s worst-attended in two decades, which makes the jump far less impressive.",
+          fix: "Attendance is up 30 percent from last season, the team’s lowest-attended in 20 years." } },
+      { text: "A public hearing on the bond measure is set for June 4." },
+      { text: "If approved, the stadium would open in 2029." },
+    ],
+  },
+  {
+    outlet: "The Morning Dispatch",
+    headline: { text: "Study links late-night screen use to shorter sleep in college students" },
+    sentences: [
+      { text: "Researchers at Halvorsen University tracked the sleep of 40 college students over six weeks." },
+      { text: "The findings confirm what many have long feared: screens are wrecking an entire generation’s health.",
+        bias: { type: "sensational",
+          explain: "One small study “confirms” nothing about “an entire generation.” Scale inflation is the tell.",
+          fix: "The study adds to research on how screen habits relate to sleep." } },
+      { text: "Students who used their phones after midnight fell asleep 22 minutes later on average than those who did not." },
+      { text: "The results leave no doubt that screen time causes lasting damage to the brain.",
+        bias: { type: "opinion",
+          explain: "The study measured sleep, not brains — and 40 students leave plenty of doubt. The certainty is the author’s, not the data’s.",
+          fix: "The authors say the results suggest a link between late-night screen use and shorter sleep." } },
+      { text: "The study has not yet been peer reviewed, and the authors note the small sample size." },
+      { text: "Experts say parents everywhere should be alarmed.",
+        bias: { type: "unsourced",
+          explain: "“Experts say” with no expert in sight — a vague authority summoned to raise the temperature.",
+          fix: "The authors recommend avoiding screens in the hour before bed." } },
+    ],
+  },
+];
+
+/* ============================================================
+   GAME CONFIG
+   ============================================================ */
+
+const ROUND_SECONDS = 70;
+const ROUNDS_PER_MATCH = 3;
+const FIND_BASE = 100;        // scaled by speed multiplier (2.0 -> 1.0)
+const TECH_BONUS = 75;        // flat, for naming the technique correctly
+const FALSE_FLAG_COST = 50;
+const SWEEP_PER_SEC = 2;      // bonus per second left when you find everything
+
+const BOT_POOL = [
+  { name: "Scoop",     color: "#1865f2" },
+  { name: "Kestrel",   color: "#0e8a7d" },
+  { name: "Newsprint", color: "#7c5cd6" },
+  { name: "Deadline",  color: "#c2417f" },
+  { name: "OffRecord", color: "#b45309" },
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+const $ = (s) => document.querySelector(s);
+const round5 = (x) => Math.round(x / 5) * 5;
+const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+
+let G = null;          // match state
+let R = null;          // current round runtime state
+
+function newMatch() {
+  const bots = shuffle(BOT_POOL).slice(0, 3).map((b, i) => ({
+    ...b,
+    skill: [0.85, 0.6, 0.35][i] + (Math.random() * 0.1 - 0.05),
+    score: 0, found: 0,
+  }));
+  G = {
+    articles: shuffle(ARTICLES).slice(0, ROUNDS_PER_MATCH),
+    round: 0,
+    score: 0,
+    bots,
+    stats: { targets: 0, found: 0, falseFlags: 0, techRight: 0, techTries: 0, findTimes: [] },
+  };
+}
+
+/* All sentences of an article as one list; index 0 is the headline. */
+function allSentences(article) {
+  return [article.headline, ...article.sentences];
+}
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+/* ---------- title ---------- */
+function renderLegend() {
+  $("#legend").innerHTML = TYPE_KEYS.map((k) => `
+    <div class="cardt">
+      <div class="tname"><span class="dot" style="background:var(--c-${k})"></span>${TYPES[k].name}</div>
+      <div class="tdesc">${TYPES[k].desc}</div>
+    </div>`).join("");
+}
+
+/* ---------- matchmaking ---------- */
+function startMatchmaking() {
+  newMatch();
+  show("#screen-match");
+  const seats = [{ name: "You", color: "#1c1a17", sub: "that’s you" },
+    ...G.bots.map((b) => ({ name: b.name, color: b.color, sub: "ready" }))];
+  $("#lobby").innerHTML = seats.map((s) => `
+    <div class="seat">
+      <div class="avatar" style="background:${s.color}">${s.name[0]}</div>
+      <div class="pname">${s.name}</div>
+      <div class="psub">${s.sub}</div>
+    </div>`).join("");
+  const seatEls = document.querySelectorAll(".seat");
+  seatEls.forEach((el, i) => setTimeout(() => el.classList.add("in"), 250 + i * 420));
+  setTimeout(() => { $("#match-status").textContent = "Match found — 4 readers"; }, 250 + 4 * 420);
+  setTimeout(() => startRound(), 250 + 4 * 420 + 700);
+}
+
+/* ---------- round ---------- */
+function startRound() {
+  const article = G.articles[G.round];
+  const sents = allSentences(article);
+  R = {
+    article, sents,
+    targets: sents.reduce((n, s) => n + (s.bias ? 1 : 0), 0),
+    foundCount: 0,
+    resolved: new Set(),   // sentence indices clicked-and-settled (bias found OR clean flagged)
+    pickerOpen: false,
+    startT: 0, elapsed: 0, over: false,
+    botEvents: [],
+    interval: null,
+    roundPts: { you: 0 },
+  };
+  G.stats.targets += R.targets;
+  G.bots.forEach((b) => { b.found = 0; b.roundPts = 0; });
+  scheduleBots(article);
+
+  $("#round-label").textContent = `Round ${G.round + 1} of ${ROUNDS_PER_MATCH}`;
+  renderArticle($("#article"), article, true);
+  $("#feed").innerHTML = "";
+  renderBoard();
+  updateScoreUI(false);
+  show("#screen-round");
+
+  // 3-2-1 countdown, then the clock starts
+  const cd = $("#countdown"), num = $("#cd-num");
+  $("#cd-sub").textContent = `${article.outlet} — ${R.targets} biased sentences hidden inside`;
+  cd.classList.add("on");
+  let n = 3;
+  num.textContent = n;
+  const cdi = setInterval(() => {
+    n--;
+    if (n > 0) { num.textContent = n; }
+    else {
+      clearInterval(cdi);
+      cd.classList.remove("on");
+      R.startT = Date.now();
+      R.interval = setInterval(tick, 100);
+    }
+  }, 800);
+}
+
+function renderArticle(container, article, interactive) {
+  container.classList.toggle("interactive", !!interactive);
+  const h = article.headline;
+  container.innerHTML = `
+    <div class="masthead">
+      <span class="outlet">${article.outlet}</span>
+      <span class="wiretag">fictional wire · training copy</span>
+    </div>
+    <h1><span class="sent" data-i="0">${h.text}</span></h1>
+    <div class="body-text">${article.sentences.map((s, j) =>
+      `<span class="sent" data-i="${j + 1}">${s.text}</span>`).join(" ")}
+    </div>`;
+  if (interactive) {
+    container.querySelectorAll(".sent").forEach((el) => {
+      el.addEventListener("click", () => onSentenceClick(+el.dataset.i, el));
+    });
+  }
+}
+
+/* ---------- clicking sentences ---------- */
+function onSentenceClick(i, el) {
+  if (!R || R.over || R.pickerOpen || !R.startT) return;
+  if (R.resolved.has(i)) return;
+  const sent = R.sents[i];
+
+  if (!sent.bias) {
+    // false flag
+    R.resolved.add(i);
+    G.stats.falseFlags++;
+    addScore(-FALSE_FLAG_COST);
+    el.classList.add("flagged-clean", "shake");
+    const v = document.createElement("span");
+    v.className = "verdict";
+    v.innerHTML = `<span class="vhead">No bias here. <span class="pts minus">−${FALSE_FLAG_COST}</span></span>That one is straight reporting — precision counts.`;
+    insertAfterSentence(el, v);
+    setTimeout(() => v.remove(), 2600);
+    return;
+  }
+
+  // bias found — now name the technique (clock keeps running!)
+  R.pickerOpen = true;
+  el.classList.add("pending");
+  const t = R.elapsed;
+  const mult = 1 + Math.max(0, (ROUND_SECONDS - t)) / ROUND_SECONDS;
+  const findPts = round5(FIND_BASE * mult);
+
+  const picker = document.createElement("span");
+  picker.className = "picker";
+  picker.innerHTML = `<span class="plabel">Bias spotted (+${findPts}) — name the technique for +${TECH_BONUS}:</span>
+    <span class="opts">${shuffle(TYPE_KEYS).map((k) =>
+      `<button class="o-${k}" data-k="${k}">${TYPES[k].name}</button>`).join("")}</span>`;
+  insertAfterSentence(el, picker);
+  picker.querySelectorAll("button").forEach((b) => {
+    b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      resolvePick(i, el, picker, b.dataset.k, findPts, t);
+    });
+  });
+}
+
+function resolvePick(i, el, picker, chosen, findPts, tFound) {
+  const bias = R.sents[i].bias;
+  const correct = chosen === bias.type;
+  picker.remove();
+  R.pickerOpen = false;
+  R.resolved.add(i);
+  R.foundCount++;
+  G.stats.found++;
+  G.stats.techTries++;
+  if (correct) G.stats.techRight++;
+  G.stats.findTimes.push(tFound);
+
+  const pts = findPts + (correct ? TECH_BONUS : 0);
+  addScore(pts);
+  R.roundPts.you += pts;
+
+  el.classList.remove("pending");
+  el.classList.add("resolved", `b-${bias.type}`);
+
+  const v = document.createElement("span");
+  v.className = `verdict v-${bias.type}`;
+  const label = correct
+    ? `${TYPES[bias.type].name} — called it. <span class="pts plus">+${pts}</span>`
+    : `It’s ${TYPES[bias.type].name}, you said ${TYPES[chosen].name}. <span class="pts plus">+${pts}</span>`;
+  v.innerHTML = `<span class="vhead">${label}</span>${bias.explain}`;
+  insertAfterSentence(el, v);
+
+  feedPush(`<b>You</b> found ${TYPES[bias.type].name} (+${pts})`);
+  renderBoard();
+
+  if (R.foundCount === R.targets) {
+    const left = Math.max(0, ROUND_SECONDS - R.elapsed);
+    const sweep = Math.round(left * SWEEP_PER_SEC);
+    if (sweep > 0) {
+      addScore(sweep);
+      R.roundPts.you += sweep;
+      feedPush(`<b>You</b> swept the article — clean-read bonus +${sweep}`);
+    }
+    setTimeout(endRound, 1000);
+  }
+}
+
+/* Insert feedback after the sentence (after the headline's <h1> when i === 0). */
+function insertAfterSentence(el, node) {
+  const anchor = el.closest("h1") || el;
+  anchor.insertAdjacentElement("afterend", node);
+}
+
+/* ---------- scoring / UI ---------- */
+function addScore(delta) {
+  G.score += delta;
+  updateScoreUI(true, delta < 0);
+}
+function updateScoreUI(pop, neg) {
+  const el = $("#your-score");
+  el.textContent = G.score;
+  el.classList.toggle("neg", G.score < 0);
+  if (pop) {
+    el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
+  }
+}
+
+function feedPush(html) {
+  const f = $("#feed");
+  const e = document.createElement("div");
+  e.className = "fentry";
+  e.innerHTML = html;
+  f.prepend(e);
+  while (f.children.length > 6) f.lastChild.remove();
+}
+
+function renderBoard() {
+  const board = $("#board");
+  const players = [
+    { key: "you", name: "You", color: "#1c1a17", score: G.score, found: R ? R.foundCount : 0, me: true },
+    ...G.bots.map((b) => ({ key: b.name, name: b.name, color: b.color, score: b.score, found: b.found })),
+  ];
+  const ranked = players.slice().sort((a, b) => b.score - a.score);
+  players.forEach((p) => { p.rank = ranked.indexOf(p); });
+
+  players.forEach((p) => {
+    let row = board.querySelector(`[data-p="${p.key}"]`);
+    if (!row) {
+      row = document.createElement("div");
+      row.className = "prow" + (p.me ? " me" : "");
+      row.dataset.p = p.key;
+      row.innerHTML = `<span class="mini" style="background:${p.color}">${p.name[0]}</span>
+        <span class="pn">${p.name}</span><span class="pips"></span><span class="ps"></span>`;
+      board.appendChild(row);
+    }
+    row.style.top = (p.rank * 50) + "px";
+    row.querySelector(".ps").textContent = p.score;
+    const total = R ? R.targets : 0;
+    row.querySelector(".pips").innerHTML =
+      "<b>" + "●".repeat(p.found) + "</b>" + "○".repeat(Math.max(0, total - p.found));
+  });
+}
+
+/* ---------- clock ---------- */
+function tick() {
+  R.elapsed = (Date.now() - R.startT) / 1000;
+  const left = Math.max(0, ROUND_SECONDS - R.elapsed);
+  $("#clock").textContent = Math.ceil(left);
+  $("#clock").classList.toggle("low", left <= 10);
+  const fill = $("#timer-fill");
+  fill.style.width = (left / ROUND_SECONDS * 100) + "%";
+  fill.classList.toggle("low", left <= 10);
+
+  // bot events
+  R.botEvents.forEach((ev) => {
+    if (!ev.done && ev.t <= R.elapsed) applyBotEvent(ev);
+  });
+
+  if (left <= 0) endRound();
+}
+
+/* ---------- bots ---------- */
+function scheduleBots(article) {
+  const sents = allSentences(article);
+  G.bots.forEach((bot) => {
+    sents.forEach((s, i) => {
+      if (!s.bias) return;
+      const findProb = 0.5 + 0.45 * bot.skill;
+      if (Math.random() > findProb) return;
+      const t = Math.min(ROUND_SECONDS - 2,
+        Math.max(4, ROUND_SECONDS * (0.08 + Math.random() * 0.78) * (1.25 - 0.45 * bot.skill)));
+      const mult = 1 + (ROUND_SECONDS - t) / ROUND_SECONDS;
+      const tech = Math.random() < 0.45 + 0.5 * bot.skill;
+      const pts = round5(FIND_BASE * mult) + (tech ? TECH_BONUS : 0);
+      R.botEvents.push({ bot, t, pts, type: s.bias.type, done: false });
+    });
+    // weaker bots sometimes flag clean sentences
+    if (Math.random() < 0.55 - bot.skill * 0.4) {
+      R.botEvents.push({ bot, t: 6 + Math.random() * (ROUND_SECONDS - 12), pts: -FALSE_FLAG_COST, false: true, done: false });
+    }
+  });
+}
+
+function applyBotEvent(ev) {
+  ev.done = true;
+  ev.bot.score += ev.pts;
+  if (ev.false) {
+    feedPush(`<b>${ev.bot.name}</b> flagged a clean sentence (−${FALSE_FLAG_COST})`);
+  } else {
+    ev.bot.found++;
+    feedPush(`<b>${ev.bot.name}</b> found ${TYPES[ev.type].name} (+${ev.pts})`);
+  }
+  renderBoard();
+}
+
+/* ---------- end of round ---------- */
+function endRound() {
+  if (R.over) return;
+  R.over = true;
+  clearInterval(R.interval);
+  // bots finish their reads even if you swept early
+  R.botEvents.forEach((ev) => { if (!ev.done) { ev.done = true; ev.bot.score += ev.pts; if (!ev.false) ev.bot.found++; } });
+  showRecap();
+}
+
+function showRecap() {
+  const article = R.article;
+  $("#recap-title").textContent = `Round ${G.round + 1} debrief`;
+  $("#recap-sub").textContent = `${article.outlet} — you found ${R.foundCount} of ${R.targets}`;
+
+  const players = [
+    { name: "You", score: G.score, me: true },
+    ...G.bots.map((b) => ({ name: b.name, score: b.score })),
+  ].sort((a, b) => b.score - a.score);
+  $("#recap-standings").innerHTML = players.map((p, i) =>
+    `<span class="chip${p.me ? " me" : ""}"><span class="rk">#${i + 1}</span>${p.name} · ${p.score}</span>`).join("");
+
+  // annotated article
+  const cont = $("#recap-article");
+  renderArticle(cont, article, false);
+  cont.querySelectorAll(".sent").forEach((el) => {
+    const i = +el.dataset.i;
+    const s = R.sents[i];
+    if (s.bias) {
+      el.classList.add(`b-${s.bias.type}`);
+      const got = R.resolved.has(i);
+      const chip = document.createElement("span");
+      chip.className = "tagchip " + (got ? "got" : "missed");
+      chip.textContent = got ? "you found it" : "missed";
+      el.insertAdjacentElement("afterend", chip);
+      const tchip = document.createElement("span");
+      tchip.className = `tagchip tc-${s.bias.type}`;
+      tchip.textContent = TYPES[s.bias.type].name;
+      el.insertAdjacentElement("afterend", tchip);
+      const v = document.createElement("span");
+      v.className = `verdict v-${s.bias.type}`;
+      v.innerHTML = `${s.bias.explain}<span class="fixline"><b>Straight version:</b> “${s.bias.fix}”</span>`;
+      insertAfterSentence(el, v);
+    } else if (R.resolved.has(i)) {
+      el.classList.add("flagged-clean");
+      const chip = document.createElement("span");
+      chip.className = "tagchip clean";
+      chip.textContent = "you flagged · clean";
+      el.insertAdjacentElement("afterend", chip);
+    }
+  });
+
+  $("#btn-next-round").textContent = (G.round + 1 < ROUNDS_PER_MATCH) ? "Next round" : "Final standings";
+  show("#screen-recap");
+}
+
+function nextRound() {
+  G.round++;
+  if (G.round < ROUNDS_PER_MATCH) startRound();
+  else showFinal();
+}
+
+/* ---------- final ---------- */
+function showFinal() {
+  const players = [
+    { name: "You", score: G.score, me: true },
+    ...G.bots.map((b) => ({ name: b.name, score: b.score })),
+  ].sort((a, b) => b.score - a.score);
+  const yourPlace = players.findIndex((p) => p.me) + 1;
+  const placeWord = ["", "1st", "2nd", "3rd", "4th"][yourPlace];
+
+  $("#final-title").textContent = yourPlace === 1 ? "Front page!" : `${placeWord} place`;
+  $("#final-sub").textContent = yourPlace === 1
+    ? "Sharpest eyes in the room. The spin never stood a chance."
+    : `${players[0].name} takes the front page this time.`;
+
+  $("#podium").innerHTML = players.map((p, i) => `
+    <div class="prow2${p.me ? " me" : ""}${i === 0 ? " first" : ""}">
+      <span class="place">${["1st", "2nd", "3rd", "4th"][i]}</span>
+      <span class="nm">${p.name}</span>
+      <span class="sc">${p.score}</span>
+    </div>`).join("");
+
+  const st = G.stats;
+  const acc = st.techTries ? Math.round(st.techRight / st.techTries * 100) : 0;
+  const avgT = st.findTimes.length ? (st.findTimes.reduce((a, b) => a + b, 0) / st.findTimes.length).toFixed(1) : "—";
+  $("#statgrid").innerHTML = `
+    <div class="stat"><div class="sv">${st.found}/${st.targets}</div><div class="sl">biased sentences found</div></div>
+    <div class="stat"><div class="sv">${acc}%</div><div class="sl">techniques named correctly</div></div>
+    <div class="stat"><div class="sv">${st.falseFlags}</div><div class="sl">clean sentences flagged</div></div>
+    <div class="stat"><div class="sv">${avgT}s</div><div class="sl">average time to find</div></div>`;
+
+  let tip;
+  const missRate = st.targets ? (st.targets - st.found) / st.targets : 0;
+  if (st.falseFlags >= 3) tip = "You’re flagging clean reporting. The skill isn’t seeing bias everywhere — it’s telling slanted writing apart from straight writing. Before you click, ask: is this a fact, or a feeling about a fact?";
+  else if (st.techTries && st.techRight / st.techTries < 0.5) tip = "You smell the spin but misname it. Review the five techniques on the title screen — naming the trick precisely is what makes the skill stick outside the game.";
+  else if (missRate > 0.4) tip = "You’re precise but leaving biases on the table. Try a second pass: read once for the story, once for the storyteller.";
+  else tip = "Strong radar. Next step: notice these same patterns in the real articles you read today — that’s the whole point of the training.";
+  $("#coach").innerHTML = `<b>Coach’s note</b>${tip}`;
+
+  show("#screen-final");
+}
+
+/* ============================================================
+   WIRE-UP
+   ============================================================ */
+renderLegend();
+$("#btn-find-match").addEventListener("click", startMatchmaking);
+$("#btn-next-round").addEventListener("click", nextRound);
+$("#btn-again").addEventListener("click", startMatchmaking);
+</script>
+</body>
+</html>

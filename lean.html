@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call the Lean</title>
+<style>
+  :root {
+    --paper: #faf7f2; --card: #ffffff; --ink: #1c1a17; --ink-soft: #6b655c;
+    --rule: #e4ded4; --brand: #c8342a; --good: #1a7f4e;
+    --l0: #2451c9; --l1: #7b96e3; --l2: #9b9483; --l3: #dd8b74; --l4: #c0392b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; min-height: 100vh; }
+  .screen { display: none; } .screen.active { display: block; }
+
+  #screen-title { max-width: 800px; margin: 0 auto; padding: 48px 24px 64px; }
+  .logo { font-family: Georgia, serif; font-size: 52px; font-weight: 700; letter-spacing: -1px;
+    border-top: 4px solid var(--ink); border-bottom: 1.5px solid var(--ink); padding: 10px 0 14px; }
+  .logo em { color: var(--brand); font-style: normal; }
+  .tagline { color: var(--ink-soft); font-size: 17px; margin: 14px 0 30px; }
+  .howto { display: grid; gap: 10px; margin-bottom: 30px; }
+  .howto div { display: flex; gap: 12px; align-items: baseline; font-size: 15.5px; }
+  .howto b.num { color: var(--brand); font-family: Georgia, serif; font-size: 18px; min-width: 18px; }
+  .spectrum-demo { display: flex; border-radius: 8px; overflow: hidden; margin-bottom: 30px; border: 1px solid var(--rule); }
+  .spectrum-demo div { flex: 1; padding: 9px 4px; text-align: center; color: #fff; font-size: 12.5px; font-weight: 700; }
+  .bigbtn { display: inline-block; background: var(--ink); color: var(--paper); border: none;
+    font-size: 18px; font-weight: 700; padding: 14px 34px; border-radius: 10px; cursor: pointer; font-family: inherit; }
+  .bigbtn:hover { background: #000; }
+  .bigbtn.red { background: var(--brand); } .bigbtn.red:hover { background: #a92a21; }
+  .modelink { margin-left: 18px; font-size: 14px; color: var(--ink-soft); }
+  .srcnote { margin-top: 34px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+
+  #screen-match { max-width: 640px; margin: 0 auto; padding: 90px 24px; text-align: center; }
+  #screen-match h2 { font-family: Georgia, serif; font-size: 28px; margin-bottom: 8px; }
+  #match-status { color: var(--ink-soft); margin-bottom: 34px; }
+  .lobby { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .lobby .seat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 18px 8px; opacity: 0; transform: translateY(8px); transition: all .35s; }
+  .lobby .seat.in { opacity: 1; transform: none; }
+  .seat .avatar { width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 17px; }
+  .seat .pname { font-size: 14px; font-weight: 600; }
+
+  #screen-round { max-width: 1020px; margin: 0 auto; padding: 18px 24px 60px; }
+  .topbar { display: flex; align-items: center; gap: 18px; margin-bottom: 6px; }
+  .topbar .roundlab { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+  .topbar .yourscore { margin-left: auto; font-family: Georgia, serif; font-size: 26px; font-weight: 700; }
+  .yourscore.pop { animation: pop .35s; }
+  @keyframes pop { 40% { transform: scale(1.22); } }
+  .clock { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 18px; width: 52px; text-align: right; }
+  .clock.low { color: var(--brand); }
+  .timerbar { height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; margin-bottom: 18px; }
+  .timerbar .fill { height: 100%; width: 100%; background: var(--ink); border-radius: 3px; }
+  .timerbar .fill.low { background: var(--brand); }
+  .roundgrid { display: grid; grid-template-columns: 1fr 240px; gap: 22px; align-items: start; }
+  @media (max-width: 880px) { .roundgrid { grid-template-columns: 1fr; } }
+
+  .article { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 28px 32px 30px; }
+  .masthead { border-bottom: 3px double var(--ink); padding-bottom: 10px; margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: baseline; }
+  .outlet-hidden { font-family: Georgia, serif; font-size: 19px; font-weight: 700; letter-spacing: 2px;
+    background: repeating-linear-gradient(45deg, #dcd5c8, #dcd5c8 6px, #cfc7b8 6px, #cfc7b8 12px);
+    color: transparent; border-radius: 4px; padding: 0 8px; user-select: none; }
+  .outlet-revealed { font-family: Georgia, serif; font-size: 19px; font-weight: 700; }
+  .wiretag { font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-soft); }
+  .article h1 { font-family: Georgia, serif; font-size: 26px; line-height: 1.28; margin-bottom: 12px; }
+  .lede { font-family: Georgia, serif; font-size: 17px; line-height: 1.65; color: #33302a; }
+
+  .guessbar { margin-top: 24px; }
+  .guessbar .glabel { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+  .spectrum { display: flex; border-radius: 10px; overflow: hidden; border: 1px solid var(--rule); }
+  .spectrum button { flex: 1; border: none; padding: 14px 4px; color: #fff; font-family: inherit;
+    font-size: 13px; font-weight: 700; cursor: pointer; opacity: .88; transition: all .12s; }
+  .spectrum button:hover { opacity: 1; transform: scale(1.04); }
+  .spectrum button:disabled { cursor: default; opacity: .35; transform: none; }
+  .spectrum button.picked { opacity: 1; outline: 3px solid var(--ink); outline-offset: -3px; }
+  .b0 { background: var(--l0); } .b1 { background: var(--l1); } .b2 { background: var(--l2); }
+  .b3 { background: var(--l3); } .b4 { background: var(--l4); }
+
+  .reveal { margin-top: 22px; border-top: 1.5px dashed var(--rule); padding-top: 18px; display: none; }
+  .reveal.on { display: block; animation: fin .3s; }
+  @keyframes fin { from { opacity: 0; transform: translateY(-4px); } }
+  .reveal .rhead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .reveal .rout { font-family: Georgia, serif; font-size: 21px; font-weight: 700; }
+  .ratechip { font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
+    border-radius: 999px; padding: 3px 10px; color: #fff; }
+  .reveal .rpts { margin-left: auto; font-family: Georgia, serif; font-size: 22px; font-weight: 800; }
+  .rpts.plus { color: var(--good); } .rpts.zero { color: var(--ink-soft); }
+  .marks { position: relative; height: 64px; margin: 6px 0 10px; }
+  .marks .track { position: absolute; top: 26px; left: 0; right: 0; height: 12px; border-radius: 6px;
+    display: flex; overflow: hidden; border: 1px solid var(--rule); }
+  .marks .track div { flex: 1; opacity: .55; }
+  .marks .track div.truth { opacity: 1; box-shadow: inset 0 0 0 2px var(--ink); }
+  .marks .pin { position: absolute; top: 0; width: 26px; height: 26px; border-radius: 50%;
+    transform: translateX(-50%); color: #fff; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; border: 2px solid var(--paper); }
+  .marks .pin.below { top: auto; bottom: 0; }
+  .tell { border-left: 3px solid var(--brand); background: #fcfaf5; border-radius: 0 8px 8px 0;
+    padding: 9px 13px; font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); margin-bottom: 14px; }
+  .tell b { color: var(--ink); }
+
+  .rail { position: sticky; top: 16px; }
+  .rail h3 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+  .board { position: relative; height: 192px; margin-bottom: 20px; }
+  .prow { position: absolute; left: 0; right: 0; height: 42px; transition: top .4s;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+    display: flex; align-items: center; gap: 9px; padding: 0 10px; }
+  .prow.me { border-color: var(--ink); border-width: 1.5px; }
+  .prow .mini { width: 24px; height: 24px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex: none; }
+  .prow .pn { font-size: 13px; font-weight: 600; flex: 1; }
+  .prow .ps { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 14px; }
+  .feed { display: flex; flex-direction: column; gap: 6px; }
+  .feed .fentry { font-size: 12.5px; color: var(--ink-soft); background: var(--card); border: 1px solid var(--rule);
+    border-radius: 7px; padding: 7px 10px; line-height: 1.35; animation: fin .3s; }
+  .feed .fentry b { color: var(--ink); }
+
+  #countdown { position: fixed; inset: 0; background: rgba(250,247,242,.92); display: none;
+    align-items: center; justify-content: center; z-index: 50; flex-direction: column; gap: 10px; }
+  #countdown.on { display: flex; }
+  #cd-num { font-family: Georgia, serif; font-size: 120px; font-weight: 700; animation: cdp 1s infinite; }
+  @keyframes cdp { 0% { transform: scale(.7); opacity: .2; } 25% { transform: scale(1.05); opacity: 1; } 100% { opacity: 1; } }
+  #cd-sub { color: var(--ink-soft); font-size: 15px; }
+
+  #screen-final { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+  #screen-final h2 { font-family: Georgia, serif; font-size: 34px; margin-bottom: 4px; }
+  #final-sub { color: var(--ink-soft); margin-bottom: 26px; }
+  .podium { display: grid; gap: 10px; margin-bottom: 30px; }
+  .prow2 { display: flex; align-items: center; gap: 14px; background: var(--card);
+    border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; }
+  .prow2.me { border-color: var(--ink); border-width: 2px; }
+  .prow2 .place { font-family: Georgia, serif; font-size: 22px; font-weight: 700; width: 44px; color: var(--ink-soft); }
+  .prow2.first .place { color: var(--brand); }
+  .prow2 .nm { font-weight: 700; font-size: 17px; flex: 1; }
+  .prow2 .sc { font-family: Georgia, serif; font-size: 24px; font-weight: 700; }
+  .statgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 22px; }
+  .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; }
+  .stat .sv { font-family: Georgia, serif; font-size: 26px; font-weight: 700; }
+  .stat .sl { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+  .coach { background: #fffdf6; border: 1px solid var(--rule); border-left: 4px solid var(--brand);
+    border-radius: 0 10px 10px 0; padding: 14px 18px; font-size: 14.5px; line-height: 1.55; margin-bottom: 26px; }
+  .coach b { display: block; margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<section id="screen-title" class="screen active">
+  <div class="logo">CALL THE <em>LEAN</em></div>
+  <div class="tagline">Real headlines, pulled from real outlets today. The source is hidden &mdash; you call its political lean before the clock does.</div>
+  <div class="howto">
+    <div><b class="num">1</b><span>A real headline and opening lines appear, <b>outlet hidden</b>.</span></div>
+    <div><b class="num">2</b><span>Place it on the spectrum. Exact rating <b>+200</b>, one notch off +100, two off +25 &mdash; all scaled by how fast you lock in.</span></div>
+    <div><b class="num">3</b><span>The reveal shows the outlet, its consensus bias rating, and where everyone guessed.</span></div>
+    <div><b class="num">4</b><span>Ten headlines against three other readers. Sharpest compass wins.</span></div>
+  </div>
+  <div class="spectrum-demo">
+    <div class="b0">Left</div><div class="b1">Lean Left</div><div class="b2">Center</div><div class="b3">Lean Right</div><div class="b4">Right</div>
+  </div>
+  <button class="bigbtn red" id="btn-find-match">Find a match</button>
+  <a class="modelink" href="index.html">or train technique-spotting &rarr;</a>
+  <div class="srcnote">Headlines fetched from outlet RSS feeds on Aug 14, 2026. Lean ratings follow published outlet-level consensus ratings (AllSides-style). Ratings apply to the outlet, not necessarily this article &mdash; that gap is part of the game.</div>
+</section>
+
+<section id="screen-match" class="screen">
+  <h2>Finding readers&hellip;</h2>
+  <div id="match-status">Searching for opponents at your level</div>
+  <div class="lobby" id="lobby"></div>
+</section>
+
+<section id="screen-round" class="screen">
+  <div class="topbar">
+    <span class="roundlab" id="round-label">Headline 1 of 10</span>
+    <span class="clock" id="clock">25</span>
+    <span class="yourscore" id="your-score">0</span>
+  </div>
+  <div class="timerbar"><div class="fill" id="timer-fill"></div></div>
+  <div class="roundgrid">
+    <div>
+      <div class="article">
+        <div class="masthead">
+          <span class="outlet-hidden" id="mast-hidden">HIDDEN OUTLET</span>
+          <span class="outlet-revealed" id="mast-revealed" style="display:none"></span>
+          <span class="wiretag">real headline &middot; source hidden</span>
+        </div>
+        <h1 id="headline"></h1>
+        <div class="lede" id="lede"></div>
+        <div class="guessbar" id="guessbar">
+          <div class="glabel">Where does this outlet sit?</div>
+          <div class="spectrum" id="spectrum">
+            <button class="b0" data-g="0">Left</button>
+            <button class="b1" data-g="1">Lean Left</button>
+            <button class="b2" data-g="2">Center</button>
+            <button class="b3" data-g="3">Lean Right</button>
+            <button class="b4" data-g="4">Right</button>
+          </div>
+        </div>
+        <div class="reveal" id="reveal"></div>
+      </div>
+      <button class="bigbtn" id="btn-next" style="display:none; margin-top:16px">Next headline</button>
+    </div>
+    <div class="rail">
+      <h3>Live standings</h3>
+      <div class="board" id="board"></div>
+      <h3>Wire</h3>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+</section>
+
+<section id="screen-final" class="screen">
+  <h2 id="final-title">Front page!</h2>
+  <div id="final-sub"></div>
+  <div class="podium" id="podium"></div>
+  <div class="statgrid" id="statgrid"></div>
+  <div class="coach" id="coach"></div>
+  <button class="bigbtn red" id="btn-again">Play again</button>
+  <a class="modelink" href="index.html">technique mode &rarr;</a>
+</section>
+
+<div id="countdown"><div id="cd-num">3</div><div id="cd-sub"></div></div>
+
+<script>
+"use strict";
+
+/* Lean scale: 0 Left · 1 Lean Left · 2 Center · 3 Lean Right · 4 Right */
+const LEANS = ["Left", "Lean Left", "Center", "Lean Right", "Right"];
+const LEAN_COLORS = ["var(--l0)", "var(--l1)", "var(--l2)", "var(--l3)", "var(--l4)"];
+
+/* Real headlines + ledes pulled from outlet RSS feeds (Aug 14, 2026); outlet lean per
+   published outlet-level consensus ratings. `tell` = what tends to give it away. */
+const ITEMS = [
+  // ---- Left ----
+  { outlet: "Mother Jones", lean: 0,
+    h: "A Trump Judge Called Mail-In Ballots a Threat to Democracy",
+    d: "On Wednesday, the conservative Fifth Circuit Court of Appeals overturned a ruling blocking key measures of Texas' sweeping voter suppression law, SB 1.",
+    tell: "“A Trump Judge” as the actor, and “voter suppression law” stated as fact rather than attributed — the framing takes a side before the story starts." },
+  { outlet: "Mother Jones", lean: 0,
+    h: "Senators Sound Alarm on Voter Intimidation in Nursing Homes",
+    d: "The Centers for Medicare and Medicaid Services, under Trump appointee Mehmet Oz, changed their guidance on voting in nursing homes last month. Now, a group of senators is saying that these changes are designed to disenfranchise nursing home residents.",
+    tell: "“Designed to disenfranchise” passes along a motive as the story's frame; “Trump appointee” ties the policy to the administration in one move." },
+  { outlet: "Mother Jones", lean: 0,
+    h: "Elon Musk’s DOGE Promised Savings, But It’s Cost Us a Fortune",
+    d: "The US government doesn't have many watchdogs left. Donald Trump fired a whole bunch of them shortly after returning to power, and many others have been pushed out since.",
+    tell: "“Cost us a fortune” — the first-person “us” and the verdict-in-headline are editorial voice, not wire copy." },
+  { outlet: "The Intercept", lean: 0,
+    h: "“Total Whitewash”: New Pentagon Report Claims U.S. Killed No Civilians in Boat Strikes",
+    d: "Government officials told reporters the War Department's latest civilian casualty report was “sickening” and a “joke.”",
+    tell: "The scare-quoted verdict leads the headline, and “claims” signals the outlet doesn't believe the report — adversarial framing of official statements." },
+  { outlet: "The Intercept", lean: 0,
+    h: "Rubio Is Trying to Keep Leftists Out of U.S. by Banning Supporters of “Economic Sabotage”",
+    d: "A new State Department policy about “far-left terrorism” could spark a crackdown on Boycott, Divestment, and Sanctions activists.",
+    tell: "The headline asserts intent (“is trying to keep leftists out”) and the lede frames the policy by its feared consequences for activists." },
+  { outlet: "The Intercept", lean: 0,
+    h: "Cornell to Pro-Palestine Students Targeted by ICE: Come Back to the U.S. or Lose Funding",
+    d: "Momodou Taal and Amandla Thomas-Johnson were finishing their graduate degrees abroad because of targeting by the Trump administration. Cornell is ordering them back to campus.",
+    tell: "“Targeted” twice, and the students are the story's sympathetic protagonists — the perspective choice is the signal." },
+
+  // ---- Lean Left ----
+  { outlet: "The New York Times", lean: 1,
+    h: "Trump’s Justice Dept. Targets Smaller Fraud Cases",
+    d: "As the Trump administration drops charges against corporations and the wealthy, it is also taking aim at small-scale fraud cases, including against the operator of a weathered food truck in California.",
+    tell: "Measured institutional voice — but the juxtaposition (“drops charges against the wealthy… takes aim at a weathered food truck”) quietly builds a fairness argument." },
+  { outlet: "The New York Times", lean: 1,
+    h: "U.S.S. Abraham Lincoln Has Been Deployed for Months, Prompting Concerns",
+    d: "The U.S.S. Abraham Lincoln has been deployed for nearly nine months. Members of Congress are worried about the crew's well-being.",
+    tell: "Nearly neutral wire tone. “Prompting concerns” is the soft, passive framing big institutional papers favor — hard mode." },
+  { outlet: "The New York Times", lean: 1,
+    h: "Russia Campaigned to Derail Moldova’s Pro-Western Government",
+    d: "In the tiny nation, Moscow paid Orthodox priests, conducted a vote-buying scheme and set up training camps on election interference — all in an effort to derail the Western-leaning government.",
+    tell: "Foreign coverage from big institutional outlets often reads center — the polish and scope of the reporting is the main clue." },
+  { outlet: "NPR", lean: 1,
+    h: "ICE uses controversial program to boost deportations. Here’s how it works in 1 county",
+    d: "Details on how ICE cooperation agreements work in practice have been hard to come by. A close look at how sheriff's deputies in Walton County, Fla., approach immigration-related arrests.",
+    tell: "“Controversial” is the label to watch — who decided? Explainer tone plus a skeptical eye on enforcement agencies is public-radio house style." },
+  { outlet: "NPR", lean: 1,
+    h: "The Taliban has taken a terrible toll on the education of girls — and boys as well",
+    d: "Saturday marks the 5th anniversary of the current Taliban rule in Afghanistan. They've had a devastating impact on girls' education. A lesser told story is their impact on the education of boys.",
+    tell: "Humanitarian framing and “a lesser told story” — the empathy-first international lens is characteristic, though the topic itself isn't partisan." },
+  { outlet: "NPR", lean: 1,
+    h: "At Big Bend National Park, bulldozers begin clearing pristine desert land for border barrier work",
+    d: "A coalition of landowners, outdoor enthusiasts and business owners say any work in Big Bend National Park would forever change the place often called “Texas' gift to the nation.”",
+    tell: "“Pristine” does quiet work, and the only voices quoted oppose the project — check who gets to speak." },
+
+  // ---- Center ----
+  { outlet: "BBC News", lean: 2,
+    h: "Kennedy Center board votes to put Trump’s name back on building",
+    d: "The board on Thursday also voted to proceed with a two-year closure for proposed renovations, which was earlier blocked by a federal judge.",
+    tell: "Straight who-what-when with no adjectives spent on either side — outside-the-fray tone is the center giveaway." },
+  { outlet: "BBC News", lean: 2,
+    h: "Mangione lawyers to meet federal prosecutors amid reports of plea deal",
+    d: "Mangione faces two federal charges of stalking resulting in death, each carrying a maximum sentence of life in prison.",
+    tell: "Procedural crime coverage, no framing spin either direction — very hard to place beyond “somewhere near center.”" },
+  { outlet: "BBC News", lean: 2,
+    h: "Conditions on US aircraft carrier at sea for more than 250 days raise alarms",
+    d: "Thousands of sailors on the USS Abraham Lincoln have reportedly faced food shortages and broken plumbing, with some considering jumping overboard.",
+    tell: "“Reportedly” hedges every claim and nobody is blamed — an accountability story told without a partisan target." },
+  { outlet: "The Hill", lean: 2,
+    h: "Court backs Trump on rescinding de minimis tariff exemption",
+    d: "A federal trade court agreed Thursday that President Trump lawfully ended a tariff exemption for low-cost goods last year.",
+    tell: "“Court backs Trump” might read pro-Trump, but it's just the ruling — insider-Washington outlets report wins and losses like box scores." },
+  { outlet: "The Hill", lean: 2,
+    h: "Bessent teases severe economic action against Iran",
+    d: "Treasury Secretary Scott Bessent said the Trump administration will unveil new measures against Iran next week as it seeks to increase economic pressure on the regime to return to the negotiating table.",
+    tell: "Pure access journalism: what an official said, framed the way the official framed it. Beltway-neutral." },
+  { outlet: "The Christian Science Monitor", lean: 2,
+    h: "AI is making daily life more expensive, at least for now. Here’s why.",
+    d: "The AI boom is driving up prices for energy, chips, and software, boosting inflation and complicating the Federal Reserve's targets.",
+    tell: "Explainer voice, hedged claim (“at least for now”), no villain — measured center-press style." },
+  { outlet: "The Christian Science Monitor", lean: 2,
+    h: "As financial outlook darkens, colleges cut staff, programs ahead of new school year",
+    d: "Colleges are struggling with financial pressures forcing them to cut programs and staff.",
+    tell: "A politically hot topic (higher ed) covered with zero culture-war framing — the absence of a fight is the tell." },
+
+  // ---- Lean Right ----
+  { outlet: "New York Post", lean: 3,
+    h: "Mayor Karen Bass’ wannabe Mamdani impression goes bust in pothole fixing fail",
+    d: "The Los Angeles mayor tried to recreate the viral pothole moment of New York's socialist mayor.",
+    tell: "“Wannabe,” “goes bust,” “fail” — tabloid mockery aimed at Democratic mayors, plus “socialist” as a sticker." },
+  { outlet: "New York Post", lean: 3,
+    h: "Outrage as taxpayer-funded swimming pool planned event ‘exclusively’ for black children",
+    d: "A public pool in Germany promoted an event “exclusively” for black people on Friday — sparking a torrent of outrage that forced it to be scrapped at the last minute by unapologetic organizers.",
+    tell: "“Outrage as…” is a story-selection tell: a local culture-war item elevated to national news, with “taxpayer-funded” and “unapologetic” doing the framing." },
+  { outlet: "New York Post", lean: 3,
+    h: "Trump asks Supreme Court to let $400M ballroom project resume at White House",
+    d: "Trump's solicitor general on Friday petitioned the high court to suspend last week's decision by a three-judge panel from the U.S. Court of Appeals for the District of Columbia Circuit.",
+    tell: "Tabloids also run straight wire-style copy — on items like this you're really guessing the outlet's portfolio, not this article. Hard mode." },
+  { outlet: "Washington Examiner", lean: 3,
+    h: "Washington’s dirtiest perk isn’t money — it’s the lifetime security clearance",
+    d: "Frank Kendall ran the Air Force under former President Joe Biden. Last week, the Pentagon yanked his security clearance, accusing him of telling a reporter about defensive gear on the new Air Force One.",
+    tell: "Opinion-forward voice (“dirtiest perk”) targeting Beltway insiders and a Biden official — conservative-press accountability angle." },
+  { outlet: "Washington Examiner", lean: 3,
+    h: "Stop blaming mortgage rates. A 29-year-old tax law is trapping you in your home",
+    d: "The housing market is stagnant, and while people are staring at interest rates as the culprit, there's a second culprit: a capital gains tax bill Washington wrote in 1997 and has left alone since.",
+    tell: "The villain is a tax law and the fix is indexing it — policy framing where taxes, not markets, are the problem leans right." },
+  { outlet: "Washington Examiner", lean: 3,
+    h: "National security advisor central to Iran negotiations to leave White House",
+    d: "White House deputy national security advisor Andy Baker is exiting the Trump administration after playing a central role in peace negotiations with Iran.",
+    tell: "Straight personnel reporting, sourced to Axios — the neutral copy that makes outlet-guessing genuinely hard." },
+
+  // ---- Right ----
+  { outlet: "Fox News", lean: 4,
+    h: "New Yorkers take Zohran Mamdani free bus promise literally as MTA loses millions in skipped fares",
+    d: "Zohran Mamdani's free bus rhetoric created a “perfect storm” of fare evasion in New York City, transit union and MTA officials warn amid rising losses.",
+    tell: "“Rhetoric,” “perfect storm,” and the target — a progressive mayor's promise framed as already backfiring." },
+  { outlet: "Fox News", lean: 4,
+    h: "Cuban ties put powerful US union under microscope over alleged communist influence push",
+    d: "A Senate committee chair demands answers from the IAM over an alleged Cuban regime influence scheme.",
+    tell: "“Communist influence” in a union story — both the vocabulary and the target (organized labor) point right." },
+  { outlet: "Fox News", lean: 4,
+    h: "El-Sayed in the hot seat after ‘sickening’ animal control record goes viral on social media",
+    d: "Abdul El-Sayed's Michigan Senate bid faces scrutiny over thousands of euthanized animals at Detroit Animal Control during his tenure as the city's health director.",
+    tell: "“In the hot seat,” a scare-quoted “sickening,” and “goes viral” — opposition-research framing aimed at a Democratic candidate." },
+  { outlet: "The Daily Wire", lean: 4,
+    h: "Surprise! A Key Voting Bloc Is Ditching The GOP For A Far-Left Candidate",
+    d: "In the battle for the Michigan U.S. Senate seat, one demographic is sticking out like a sore thumb, fresh polling out of Michigan reveals.",
+    tell: "“Surprise!” talks directly to a presumed conservative reader, and “far-left” is the label tell — candidates rarely call themselves that." },
+  { outlet: "The Daily Wire", lean: 4,
+    h: "AOC Cooks Up Right-Wing Dating Conspiracy After Egg-Freezing Backlash",
+    d: "After backlash to her egg-freezing stunt this week, New York Democratic Rep. Alexandria Ocasio-Cortez went after conservative men.",
+    tell: "“Cooks up,” “stunt,” “went after” — every verb prosecutes. First-name-basis mockery of AOC is a right-media signature." },
+  { outlet: "The Daily Wire", lean: 4,
+    h: "Top Trump Officials Sound Alarm Over GOP Midterm Strategy",
+    d: "President Donald Trump's top political advisers are urging Republican candidates to talk more about health care and less about voter integrity.",
+    tell: "Sympathetic insider access to the GOP's strategy conversation — the story assumes you're rooting for the plan to work." },
+];
+
+const ITEM_SECONDS = 25;
+const ITEMS_PER_MATCH = 10;
+const DIST_PTS = [200, 100, 25, 0, 0];
+
+const BOT_POOL = [
+  { name: "Scoop", color: "#1865f2" },
+  { name: "Kestrel", color: "#0e8a7d" },
+  { name: "Newsprint", color: "#7c5cd6" },
+  { name: "Deadline", color: "#c2417f" },
+  { name: "OffRecord", color: "#b45309" },
+];
+
+const $ = (s) => document.querySelector(s);
+const round5 = (x) => Math.round(x / 5) * 5;
+const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+const clampLean = (x) => Math.max(0, Math.min(4, x));
+
+let G = null, R = null;
+
+function newMatch() {
+  G = {
+    items: shuffle(ITEMS).slice(0, ITEMS_PER_MATCH),
+    idx: 0, score: 0,
+    bots: shuffle(BOT_POOL).slice(0, 3).map((b, i) => ({
+      ...b, skill: [0.85, 0.6, 0.35][i] + (Math.random() * 0.1 - 0.05), score: 0,
+    })),
+    stats: { exact: 0, dists: [], signed: [], timeouts: 0 },
+  };
+}
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function startMatchmaking() {
+  newMatch();
+  show("#screen-match");
+  const seats = [{ name: "You", color: "#1c1a17" }, ...G.bots];
+  $("#lobby").innerHTML = seats.map((s) => `
+    <div class="seat"><div class="avatar" style="background:${s.color}">${s.name[0]}</div>
+    <div class="pname">${s.name}</div></div>`).join("");
+  document.querySelectorAll(".seat").forEach((el, i) => setTimeout(() => el.classList.add("in"), 200 + i * 380));
+  setTimeout(() => { $("#match-status").textContent = "Match found — 4 readers"; }, 200 + 4 * 380);
+  setTimeout(() => {
+    const cd = $("#countdown"), num = $("#cd-num");
+    $("#cd-sub").textContent = `${ITEMS_PER_MATCH} real headlines — call the lean`;
+    show("#screen-round");
+    renderBoard();
+    cd.classList.add("on");
+    let n = 3; num.textContent = n;
+    const cdi = setInterval(() => {
+      n--;
+      if (n > 0) num.textContent = n;
+      else { clearInterval(cdi); cd.classList.remove("on"); startItem(); }
+    }, 800);
+  }, 200 + 4 * 380 + 600);
+}
+
+function startItem() {
+  const item = G.items[G.idx];
+  R = { item, startT: Date.now(), elapsed: 0, answered: false, over: false,
+        bots: G.bots.map((b) => makeBotPlan(b, item)), interval: null };
+  $("#round-label").textContent = `Headline ${G.idx + 1} of ${ITEMS_PER_MATCH}`;
+  $("#headline").textContent = item.h;
+  $("#lede").textContent = item.d;
+  $("#mast-hidden").style.display = "";
+  $("#mast-revealed").style.display = "none";
+  $("#reveal").classList.remove("on");
+  $("#reveal").innerHTML = "";
+  $("#btn-next").style.display = "none";
+  $("#feed").innerHTML = "";
+  document.querySelectorAll("#spectrum button").forEach((b) => {
+    b.disabled = false; b.classList.remove("picked");
+  });
+  R.interval = setInterval(tick, 100);
+}
+
+function makeBotPlan(bot, item) {
+  const t = Math.min(23, 3 + Math.random() * 19 * (1.3 - 0.5 * bot.skill));
+  const r = Math.random();
+  const pExact = 0.35 + 0.45 * bot.skill;
+  let guess;
+  if (r < pExact) guess = item.lean;
+  else if (r < pExact + (1 - pExact) * 0.72) guess = clampLean(item.lean + (Math.random() < 0.5 ? -1 : 1));
+  else guess = clampLean(item.lean + (Math.random() < 0.5 ? -2 : 2));
+  return { bot, t, guess, locked: false };
+}
+
+function tick() {
+  R.elapsed = (Date.now() - R.startT) / 1000;
+  const left = Math.max(0, ITEM_SECONDS - R.elapsed);
+  $("#clock").textContent = Math.ceil(left);
+  $("#clock").classList.toggle("low", left <= 7);
+  const fill = $("#timer-fill");
+  fill.style.width = (left / ITEM_SECONDS * 100) + "%";
+  fill.classList.toggle("low", left <= 7);
+  R.bots.forEach((p) => {
+    if (!p.locked && p.t <= R.elapsed) {
+      p.locked = true;
+      feedPush(`<b>${p.bot.name}</b> locked in a call`);
+    }
+  });
+  if (left <= 0 && !R.over) {
+    if (!R.answered) { G.stats.timeouts++; G.stats.dists.push(2.5); }
+    reveal(null);
+  }
+}
+
+function onGuess(g) {
+  if (R.answered || R.over) return;
+  R.answered = true;
+  const btn = document.querySelector(`#spectrum button[data-g="${g}"]`);
+  btn.classList.add("picked");
+  reveal(g);
+}
+
+function reveal(playerGuess) {
+  R.over = true;
+  clearInterval(R.interval);
+  document.querySelectorAll("#spectrum button").forEach((b) => { b.disabled = true; });
+  const item = R.item;
+  const mult = 1 + Math.max(0, ITEM_SECONDS - R.elapsed) / ITEM_SECONDS;
+
+  let pts = 0;
+  if (playerGuess !== null) {
+    const d = Math.abs(playerGuess - item.lean);
+    pts = round5(DIST_PTS[d] * mult);
+    G.score += pts;
+    if (d === 0) G.stats.exact++;
+    G.stats.dists.push(d);
+    G.stats.signed.push(playerGuess - item.lean);
+  }
+
+  R.bots.forEach((p) => {
+    const d = Math.abs(p.guess - item.lean);
+    const bmult = 1 + Math.max(0, ITEM_SECONDS - p.t) / ITEM_SECONDS;
+    p.pts = round5(DIST_PTS[d] * bmult);
+    p.bot.score += p.pts;
+  });
+
+  updateScoreUI();
+  renderBoard();
+
+  $("#mast-hidden").style.display = "none";
+  const mr = $("#mast-revealed");
+  mr.style.display = "";
+  mr.textContent = item.outlet;
+
+  const pins = [];
+  if (playerGuess !== null) pins.push({ label: "Y", color: "#1c1a17", pos: playerGuess, below: false, off: 0 });
+  R.bots.forEach((p, i) => pins.push({ label: p.bot.name[0], color: p.bot.color, pos: p.guess, below: true, off: i }));
+  const pinHtml = pins.map((p) => {
+    const base = (p.pos + 0.5) * 20;
+    const jitter = p.below ? (p.off - 1) * 3.2 : 0;
+    return `<div class="pin${p.below ? " below" : ""}" style="left:${base + jitter}%; background:${p.color}">${p.label}</div>`;
+  }).join("");
+
+  const rv = $("#reveal");
+  rv.innerHTML = `
+    <div class="rhead">
+      <span class="rout">${item.outlet}</span>
+      <span class="ratechip" style="background:${LEAN_COLORS[item.lean]}">${LEANS[item.lean]}</span>
+      <span class="rpts ${pts > 0 ? "plus" : "zero"}">${playerGuess === null ? "time's up" : "+" + pts}</span>
+    </div>
+    <div class="marks">
+      <div class="track">${[0, 1, 2, 3, 4].map((i) =>
+        `<div class="${i === item.lean ? "truth" : ""}" style="background:${LEAN_COLORS[i]}"></div>`).join("")}</div>
+      ${pinHtml}
+    </div>
+    <div class="tell"><b>The tell:</b> ${item.tell}</div>`;
+  rv.classList.add("on");
+
+  R.bots.forEach((p) => feedPush(`<b>${p.bot.name}</b> called ${LEANS[p.guess]} (+${p.pts})`));
+
+  const nb = $("#btn-next");
+  nb.textContent = (G.idx + 1 < ITEMS_PER_MATCH) ? "Next headline" : "Final standings";
+  nb.style.display = "";
+  nb.focus();
+}
+
+function nextItem() {
+  G.idx++;
+  if (G.idx < ITEMS_PER_MATCH) startItem();
+  else showFinal();
+}
+
+function updateScoreUI() {
+  const el = $("#your-score");
+  el.textContent = G.score;
+  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
+}
+
+function feedPush(html) {
+  const f = $("#feed");
+  const e = document.createElement("div");
+  e.className = "fentry"; e.innerHTML = html;
+  f.prepend(e);
+  while (f.children.length > 6) f.lastChild.remove();
+}
+
+function renderBoard() {
+  const board = $("#board");
+  const players = [
+    { key: "you", name: "You", color: "#1c1a17", score: G.score, me: true },
+    ...G.bots.map((b) => ({ key: b.name, name: b.name, color: b.color, score: b.score })),
+  ];
+  const ranked = players.slice().sort((a, b) => b.score - a.score);
+  players.forEach((p) => { p.rank = ranked.indexOf(p); });
+  players.forEach((p) => {
+    let row = board.querySelector(`[data-p="${p.key}"]`);
+    if (!row) {
+      row = document.createElement("div");
+      row.className = "prow" + (p.me ? " me" : "");
+      row.dataset.p = p.key;
+      row.innerHTML = `<span class="mini" style="background:${p.color}">${p.name[0]}</span>
+        <span class="pn">${p.name}</span><span class="ps"></span>`;
+      board.appendChild(row);
+    }
+    row.style.top = (p.rank * 50) + "px";
+    row.querySelector(".ps").textContent = p.score;
+  });
+}
+
+function showFinal() {
+  const players = [
+    { name: "You", score: G.score, me: true },
+    ...G.bots.map((b) => ({ name: b.name, score: b.score })),
+  ].sort((a, b) => b.score - a.score);
+  const place = players.findIndex((p) => p.me) + 1;
+  $("#final-title").textContent = place === 1 ? "Front page!" : ["", "1st", "2nd", "3rd", "4th"][place] + " place";
+  $("#final-sub").textContent = place === 1
+    ? "Sharpest compass in the room."
+    : `${players[0].name} takes the front page this time.`;
+  $("#podium").innerHTML = players.map((p, i) => `
+    <div class="prow2${p.me ? " me" : ""}${i === 0 ? " first" : ""}">
+      <span class="place">${["1st", "2nd", "3rd", "4th"][i]}</span>
+      <span class="nm">${p.name}</span><span class="sc">${p.score}</span></div>`).join("");
+
+  const st = G.stats;
+  const n = st.dists.length || 1;
+  const avgDist = st.dists.reduce((a, b) => a + b, 0) / n;
+  const signedN = st.signed.length || 1;
+  const skew = st.signed.reduce((a, b) => a + b, 0) / signedN;
+  $("#statgrid").innerHTML = `
+    <div class="stat"><div class="sv">${st.exact}/${ITEMS_PER_MATCH}</div><div class="sl">exact calls</div></div>
+    <div class="stat"><div class="sv">${avgDist.toFixed(1)}</div><div class="sl">avg distance (notches)</div></div>
+    <div class="stat"><div class="sv">${skew > 0 ? "+" : ""}${skew.toFixed(1)}</div><div class="sl">compass skew (− left / + right)</div></div>
+    <div class="stat"><div class="sv">${st.timeouts}</div><div class="sl">clock beat you</div></div>`;
+
+  let tip;
+  if (st.exact / ITEMS_PER_MATCH >= 0.6) {
+    tip = "Sharp compass. Try noticing WHICH cue tipped you off each time — labels, verbs, story selection, or who gets quoted. Naming the cue is what transfers to real reading.";
+  } else if (Math.abs(skew) >= 0.6) {
+    tip = `You placed outlets ${skew > 0 ? "to the right" : "to the left"} of their consensus rating on average. That skew is your own reference point showing up — the most useful thing this game can teach you.`;
+  } else if (avgDist > 1.2) {
+    tip = "Lean hides in word choice (“controversial,” “so-called,” “far-left”), in who gets quoted, and in which stories get covered at all. Read the verbs — neutral copy reports, slanted copy prosecutes.";
+  } else {
+    tip = "Solid calls. The hardest headlines are straight news from slanted outlets — there the real skill is admitting the article alone can't tell you, which is exactly the humility good readers have.";
+  }
+  $("#coach").innerHTML = `<b>Coach's note</b>${tip}`;
+  show("#screen-final");
+}
+
+document.querySelectorAll("#spectrum button").forEach((b) => {
+  b.addEventListener("click", () => onGuess(+b.dataset.g));
+});
+$("#btn-find-match").addEventListener("click", startMatchmaking);
+$("#btn-next").addEventListener("click", nextItem);
+$("#btn-again").addEventListener("click", startMatchmaking);
+</script>
+</body>
+</html>
